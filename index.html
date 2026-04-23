@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Федя Нищий — Защищенная версия</title>
+    <title>Федя Нищий — Сообщество</title>
     <style>
-        /* Стиль полностью сохранен */
+        /* БАЗОВЫЕ СТИЛИ (ЗАМОРОЖЕНО) */
         body {
             margin: 0; padding: 0; display: flex; justify-content: center; align-items: center;
             height: 100vh; overflow: hidden; font-family: 'Segoe UI', sans-serif; color: white;
@@ -13,31 +13,47 @@
             background-size: 400% 400%; animation: gradient 10s ease infinite;
         }
         @keyframes gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        
         #welcome-screen { text-align: center; transition: 0.8s; position: absolute; z-index: 10; }
         .welcome-card { background: rgba(0,0,0,0.15); padding: 40px 60px; border-radius: 30px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
+        
         #main-container {
             opacity: 0; transform: scale(0.8); transition: all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.2);
             pointer-events: none; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
             padding: 40px; border-radius: 30px; width: 380px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.2); color: #222;
         }
-        .step { display: none; }
+        
+        .step { display: none; max-height: 500px; overflow-y: auto; padding-right: 5px; }
         .active { display: block; animation: fadeIn 0.5s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         .btn { display: block; width: 100%; padding: 15px; margin: 12px 0; border-radius: 12px; font-weight: 600; border: none; cursor: pointer; transition: 0.3s; font-size: 1rem; }
         .btn-black { background: #222; color: #fff; }
         .btn-blue { background: #23a6d5; color: white; margin-top: 20px; }
         .btn-gray { background: #eee; color: #222; }
+        
         input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; background: #f9f9f9; outline: none; margin-bottom: 15px; }
-        .warning { color: #e73c7e; font-size: 0.8rem; padding: 10px; background: rgba(231, 60, 126, 0.05); border-radius: 10px; border-left: 3px solid #e73c7e; text-align: left; margin-bottom: 10px; }
+        
         .user-header { background: #f0f0f0; padding: 15px; border-radius: 15px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; }
         .avatar { width: 50px; height: 50px; background: #23a6d5; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem; }
+        
         .admin-only { display: none; background: #ff0000; color: white; margin-top: 15px; }
         .profile-avatar-big { width: 80px; height: 80px; background: #23a6d5; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; font-weight: bold; }
+        
         .profile-info { background: #f9f9f9; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #eee; }
         .info-value { font-size: 1.1rem; font-weight: 700; color: #222; margin-top: 4px; display: flex; justify-content: center; align-items: center; gap: 8px; }
-        .edit-icon { cursor: pointer; color: #23a6d5; }
+        .lvl-badge { background: #222; color: #ffd700; padding: 2px 8px; border-radius: 6px; font-size: 0.8rem; margin-top: 5px; display: inline-block; }
+
+        /* СПИСОК ПОЛЬЗОВАТЕЛЕЙ */
+        .users-list { text-align: left; }
+        .user-card-small { background: white; border: 1px solid #eee; padding: 10px; border-radius: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; }
+        .user-card-small:hover { background: #f5f5f5; transform: scale(1.02); }
+        .user-card-small .avatar-s { width: 35px; height: 35px; border-radius: 50%; background: #23a6d5; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; }
+
         .hidden { opacity: 0 !important; transform: scale(1.1) !important; pointer-events: none; }
         .show-menu { opacity: 1 !important; transform: scale(1) !important; pointer-events: auto !important; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
     </style>
 </head>
 <body onclick="startApp()">
@@ -79,22 +95,31 @@
                 </div>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div style="background: white; border: 1px solid #eee; padding: 15px; border-radius: 12px; cursor: pointer;" onclick="showStep('step-profile', event)">👤 Профиль</div>
-                <div style="background: white; border: 1px solid #eee; padding: 15px; border-radius: 12px; cursor: pointer;" onclick="logout()">🚪 Выйти</div>
+                <div style="background: white; border: 1px solid #eee; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: 600;" onclick="showStep('step-profile', event)">👤 Профиль</div>
+                <div style="background: white; border: 1px solid #eee; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: 600;" onclick="openUsersList(event)">👥 Пользователи</div>
             </div>
             <button id="admin-btn" class="btn admin-only" onclick="showStep('step-admin', event)">🛡️ МЕНЕДЖЕР МОДЕРАТОРА</button>
+            <button class="btn btn-black" onclick="logout()">🚪 Выйти из системы</button>
         </div>
 
         <div id="step-profile" class="step">
-            <h2>Профиль</h2>
+            <h2 id="profile-title">Профиль</h2>
             <div class="profile-card">
                 <div class="profile-avatar-big" id="profile-avatar-letter">?</div>
                 <div class="profile-info">
                     <div style="font-size: 0.75rem; color: #888;">Имя пользователя</div>
-                    <div class="info-value"><span id="profile-nick">User</span> <span class="edit-icon" onclick="showStep('step-edit-name', event)">✏️</span></div>
+                    <div class="info-value"><span id="profile-nick">User</span> <span id="edit-name-btn" class="edit-icon" onclick="showStep('step-edit-name', event)">✏️</span></div>
+                    <div class="lvl-badge">LVL: <span id="profile-lvl">1</span></div>
                 </div>
-                <button class="btn btn-gray" onclick="showStep('step-dashboard', event)">← Назад</button>
+                <button class="btn btn-gray" id="back-to-dash" onclick="showStep('step-dashboard', event)">← Назад</button>
             </div>
+        </div>
+
+        <div id="step-users" class="step">
+            <h2>Пользователи</h2>
+            <div id="all-users-container" class="users-list">
+                </div>
+            <button class="btn btn-gray" onclick="showStep('step-dashboard', event)">← Назад</button>
         </div>
 
         <div id="step-edit-name" class="step">
@@ -106,15 +131,18 @@
 
         <div id="step-admin" class="step">
             <h2 style="color: red;">MODER PANEL</h2>
-            <button class="btn btn-black" onclick="alert('Данные очищены!')">Управление БД</button>
+            <button class="btn btn-black" onclick="setAdminLvl()">⭐ Установить себе LVL</button>
             <button class="btn btn-gray" onclick="showStep('step-dashboard', event)">← Назад</button>
         </div>
     </div>
 
     <script>
         const SECRET_KEY = "FEDYA_BOSS_2024";
-        const BANNED_NAME = "КРУТОЙ"; // Запрещенное имя
+        const BANNED_NAME = "КРУТОЙ";
         let currentUser = null;
+
+        // Инициализация базы пользователей
+        if(!localStorage.getItem('allUsers')) localStorage.setItem('allUsers', JSON.stringify([]));
 
         function startApp() {
             document.getElementById('welcome-screen').classList.add('hidden');
@@ -124,6 +152,10 @@
 
         function showStep(stepId, e) {
             if (e) e.stopPropagation();
+            // Возвращаем настройки профиля к "своему", если уходили из просмотра чужих
+            if(stepId === 'step-profile' && currentUser) {
+                renderProfile(currentUser, true);
+            }
             document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
             document.getElementById(stepId).classList.add('active');
         }
@@ -132,20 +164,21 @@
             e.stopPropagation();
             const nick = document.getElementById('reg-nick').value;
             const pass = document.getElementById('reg-pass').value;
-
-            if (nick.toUpperCase() === BANNED_NAME) {
-                alert("Это имя запрещено системой!");
-                return;
-            }
+            if (nick.toUpperCase() === BANNED_NAME) { alert("Имя запрещено!"); return; }
 
             if (nick.length >= 3) {
                 let isModer = false;
-                const key = prompt("Ключ модератора (если есть):");
+                const key = prompt("Ключ модератора:");
                 if (key === SECRET_KEY) isModer = true;
 
-                const userData = { nick, pass, isModer };
-                localStorage.setItem('savedUser', JSON.stringify(userData));
-                alert("Успешно!");
+                const newUser = { nick, pass, isModer, lvl: 1 };
+                
+                // Сохраняем в список всех пользователей
+                let all = JSON.parse(localStorage.getItem('allUsers'));
+                all.push(newUser);
+                localStorage.setItem('allUsers', JSON.stringify(all));
+
+                alert("Регистрация успешна!");
                 showStep('step-login');
             }
         }
@@ -154,10 +187,12 @@
             e.stopPropagation();
             const nick = document.getElementById('login-nick').value;
             const pass = document.getElementById('login-pass').value;
-            const saved = JSON.parse(localStorage.getItem('savedUser'));
+            const all = JSON.parse(localStorage.getItem('allUsers'));
+            
+            const user = all.find(u => u.nick === nick && u.pass === pass);
 
-            if (saved && nick === saved.nick && pass === saved.pass) {
-                currentUser = saved;
+            if (user) {
+                currentUser = user;
                 updateUI();
                 showStep('step-dashboard');
             } else { alert("Ошибка входа!"); }
@@ -166,10 +201,8 @@
         function updateUI() {
             if (!currentUser) return;
             document.getElementById('user-display-name').innerText = currentUser.nick;
-            document.getElementById('profile-nick').innerText = currentUser.nick;
             const letter = currentUser.nick.charAt(0).toUpperCase();
             document.getElementById('avatar-letter').innerText = letter;
-            document.getElementById('profile-avatar-letter').innerText = letter;
 
             if (currentUser.isModer) {
                 document.getElementById('status-text').innerText = "модерский аккаунт";
@@ -178,31 +211,78 @@
                 document.getElementById('admin-btn').style.display = "block";
             } else {
                 document.getElementById('status-text').innerText = "Обычный";
+                document.getElementById('avatar-letter').style.background = "#23a6d5";
                 document.getElementById('admin-btn').style.display = "none";
             }
+        }
+
+        function openUsersList(e) {
+            const container = document.getElementById('all-users-container');
+            container.innerHTML = '';
+            const all = JSON.parse(localStorage.getItem('allUsers'));
+
+            all.forEach(user => {
+                const div = document.createElement('div');
+                div.className = 'user-card-small';
+                div.innerHTML = `
+                    <div class="avatar-s" style="background: ${user.isModer ? 'red' : '#23a6d5'}">${user.nick[0].toUpperCase()}</div>
+                    <div>
+                        <div style="font-weight: bold; font-size: 0.9rem;">${user.nick}</div>
+                        <div style="font-size: 0.7rem; color: #888;">LVL: ${user.lvl}</div>
+                    </div>
+                `;
+                div.onclick = () => {
+                    renderProfile(user, false);
+                    showStep('step-profile');
+                };
+                container.appendChild(div);
+            });
+            showStep('step-users', e);
+        }
+
+        function renderProfile(user, isOwn) {
+            document.getElementById('profile-nick').innerText = user.nick;
+            document.getElementById('profile-lvl').innerText = user.lvl || 1;
+            const letter = user.nick.charAt(0).toUpperCase();
+            const profAv = document.getElementById('profile-avatar-letter');
+            profAv.innerText = letter;
+            profAv.style.background = user.isModer ? 'red' : '#23a6d5';
+            
+            document.getElementById('profile-title').innerText = isOwn ? "Мой Профиль" : "Профиль игрока";
+            document.getElementById('edit-name-btn').style.display = isOwn ? "inline" : "none";
+            document.getElementById('back-to-dash').onclick = () => showStep(isOwn ? 'step-dashboard' : 'step-users');
         }
 
         function saveNewName(e) {
             e.stopPropagation();
             const newName = document.getElementById('new-name-input').value;
-            
-            if (newName.toUpperCase() === BANNED_NAME) {
-                alert("Ник КРУТОЙ заблокирован создателем!");
-                return;
-            }
+            if (newName.toUpperCase() === BANNED_NAME) { alert("Ник заблокирован!"); return; }
 
             if (newName.length >= 3) {
+                let all = JSON.parse(localStorage.getItem('allUsers'));
+                const index = all.findIndex(u => u.nick === currentUser.nick);
                 currentUser.nick = newName;
-                localStorage.setItem('savedUser', JSON.stringify(currentUser));
+                all[index] = currentUser;
+                localStorage.setItem('allUsers', JSON.stringify(all));
                 updateUI();
                 showStep('step-profile');
             }
         }
 
-        function logout() {
-            currentUser = null;
-            location.reload();
+        function setAdminLvl() {
+            const newLvl = prompt("Введите LVL:");
+            if (newLvl && !isNaN(newLvl)) {
+                let all = JSON.parse(localStorage.getItem('allUsers'));
+                const index = all.findIndex(u => u.nick === currentUser.nick);
+                currentUser.lvl = parseInt(newLvl);
+                all[index] = currentUser;
+                localStorage.setItem('allUsers', JSON.stringify(all));
+                updateUI();
+                alert("LVL изменен!");
+            }
         }
+
+        function logout() { location.reload(); }
     </script>
 </body>
 </html>
