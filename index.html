@@ -3,98 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Вертолет Кликер PRO + Multi-Admin</title>
+    <title>Вертолет Кликер ONLINE</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
-        /* [ВСЕ СТИЛИ ЗАМОРОЖЕНЫ] */
-        body {
-            margin: 0; padding: 0; height: 100vh;
-            display: flex; flex-direction: column;
-            background: linear-gradient(135deg, #000000, #0f0c29, #302b63, #000000);
-            background-size: 400% 400%; animation: gradientBG 15s ease infinite;
-            color: white; font-family: 'Segoe UI', sans-serif;
-            overflow: hidden; user-select: none; -webkit-user-select: none;
-        }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        #ban-screen {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 9999;
-            flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; color: #ff4444;
-        }
-
-        #player-id-display {
-            position: absolute; top: 85px; right: 15px;
-            font-size: 10px; background: rgba(255, 255, 255, 0.05);
-            padding: 5px 10px; border-radius: 5px;
-            color: rgba(255, 255, 255, 0.4); letter-spacing: 1px;
-            z-index: 5; border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        nav {
-            display: flex; justify-content: center; gap: 10px;
-            padding: 20px; background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px); z-index: 10;
-        }
-
-        .nav-btn {
-            padding: 10px 25px; border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.1); color: white;
-            border-radius: 12px; cursor: pointer; transition: 0.3s;
-        }
-
+        /* ДИЗАЙН И ОТСТУПЫ ЗАМОРОЖЕНЫ */
+        body { margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; background: linear-gradient(135deg, #000000, #0f0c29, #302b63, #000000); background-size: 400% 400%; animation: gradientBG 15s ease infinite; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; user-select: none; -webkit-user-select: none; }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        #ban-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #ff4444; }
+        #player-id-display { position: absolute; top: 85px; right: 15px; font-size: 10px; background: rgba(255, 255, 255, 0.05); padding: 5px 10px; border-radius: 5px; color: rgba(255, 255, 255, 0.4); letter-spacing: 1px; z-index: 5; border: 1px solid rgba(255, 255, 255, 0.1); }
+        nav { display: flex; justify-content: center; gap: 10px; padding: 20px; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); z-index: 10; }
+        .nav-btn { padding: 10px 25px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.1); color: white; border-radius: 12px; cursor: pointer; transition: 0.3s; }
         .nav-btn.active { background: #ffd700; color: black; font-weight: bold; }
         #admin-btn { display: none; border: 1px solid #ff4444; }
-
-        .tab-content {
-            display: none; flex-direction: column;
-            align-items: center; justify-content: flex-start;
-            flex-grow: 1; padding: 20px;
-        }
-
-        #clicker-tab { padding-top: 60px; }
+        .tab-content { display: none; flex-direction: column; align-items: center; justify-content: flex-start; flex-grow: 1; padding: 20px; }
+        #clicker-tab { padding-top: 60px; } /* Смещение вниз заморожено */
         .tab-content.active { display: flex; }
-
-        #balance-container {
-            font-size: 38px; font-weight: 800; margin-bottom: 30px;
-            padding: 10px 30px; background: rgba(255, 255, 255, 0.1);
-            border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        #clicker-image {
-            width: 85%; max-width: 500px; border-radius: 20px;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.15);
-            transition: transform 0.1s; touch-action: manipulation;
-        }
-
+        #balance-container { font-size: 38px; font-weight: 800; margin-bottom: 30px; padding: 10px 30px; background: rgba(255, 255, 255, 0.1); border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.2); }
+        #clicker-image { width: 85%; max-width: 500px; border-radius: 20px; box-shadow: 0 0 30px rgba(255, 0, 0, 0.15); transition: transform 0.1s; touch-action: manipulation; }
         #clicker-image:active { transform: scale(0.92); }
-
-        .shop-item {
-            width: 100%; max-width: 400px; background: rgba(255, 255, 255, 0.1);
-            margin: 10px 0; padding: 20px; border-radius: 15px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-
+        .shop-item { width: 100%; max-width: 400px; background: rgba(255, 255, 255, 0.1); margin: 10px 0; padding: 20px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; }
         .buy-btn { background: #28a745; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; }
-        .buy-btn:disabled { background: #555; }
-
         .admin-box { background: rgba(255, 0, 0, 0.15); padding: 30px; border-radius: 20px; border: 1px solid #ff4444; text-align: center; }
         .admin-action { background: #ff4444; color: white; border: none; padding: 12px 20px; margin: 10px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 220px;}
-
-        .overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
-            z-index: 100; justify-content: center; align-items: center;
-        }
-
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 100; justify-content: center; align-items: center; }
         .modal-content { background: rgba(40, 40, 60, 0.95); padding: 30px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.2); text-align: center; max-width: 300px; }
         #admin-input { width: 80%; padding: 10px; margin: 15px 0; border-radius: 8px; border: none; outline: none; text-align: center; font-size: 18px; }
-
         .plus-one { position: absolute; color: #ffd700; font-weight: bold; font-size: 30px; pointer-events: none; animation: floatUp 0.6s ease-out forwards; }
         @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
     </style>
@@ -102,31 +36,19 @@
 <body>
 
     <div id="ban-screen">
-        <h1 style="font-size: 40px;">ACCESS DENIED</h1>
+        <h1>ACCESS DENIED</h1>
         <p>Ваш ID заблокирован.</p>
         <p id="banned-id-info" style="color: gray; font-size: 12px;"></p>
     </div>
 
     <div id="player-id-display">PILOT_ID: <span id="uid-value">...</span></div>
 
-    <div id="modal-reset" class="overlay">
-        <div class="modal-content">
-            <h3>Сбросить всё?</h3>
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button onclick="confirmReset()" style="background:#dc3545; color:white; flex:1; padding:10px; border:none; border-radius:10px;">Да</button>
-                <button onclick="closeModals()" style="background:#6c757d; color:white; flex:1; padding:10px; border:none; border-radius:10px;">Нет</button>
-            </div>
-        </div>
-    </div>
-
     <div id="modal-admin" class="overlay">
         <div class="modal-content">
-            <h3 style="margin-top:0">Выдача монет</h3>
-            <input type="number" id="admin-input" placeholder="Кол-во">
-            <div style="display:flex; gap:10px;">
-                <button onclick="confirmAdminAdd()" style="background:#28a745; color:white; flex:1; padding:10px; border:none; border-radius:10px; font-weight:bold;">ОК</button>
-                <button onclick="closeModals()" style="background:#6c757d; color:white; flex:1; padding:10px; border:none; border-radius:10px;">Отмена</button>
-            </div>
+            <h3>Выдача монет</h3>
+            <input type="number" id="admin-input">
+            <button onclick="confirmAdminAdd()">ОК</button>
+            <button onclick="closeModals()">Отмена</button>
         </div>
     </div>
 
@@ -145,70 +67,86 @@
         <h2 style="margin-top: 40px;">Магазин</h2>
         <div class="shop-item">
             <div><h3>Клик +1</h3><p>Цена: <span id="click-price">10</span></p></div>
-            <button class="buy-btn" id="btn-upgrade-click" onclick="buyUpgrade('click')">Купить</button>
+            <button class="buy-btn" onclick="buyUpgrade('click')">Купить</button>
         </div>
         <div class="shop-item">
             <div><h3>Авто 1/с</h3><p>Цена: <span id="auto-price">50</span></p></div>
-            <button class="buy-btn" id="btn-upgrade-auto" onclick="buyUpgrade('auto')">Купить</button>
+            <button class="buy-btn" onclick="buyUpgrade('auto')">Купить</button>
         </div>
-        <button onclick="showResetModal()" style="margin-top: 20px; background: none; border: 1px solid #555; color: #555; cursor: pointer; padding:5px 10px; border-radius:5px;">Сброс</button>
     </div>
 
     <div id="admin-tab" class="tab-content">
         <div class="admin-box" style="margin-top: 40px;">
-            <h2 style="color:#ff4444">ADMIN TERMINAL</h2>
+            <h2>ADMIN TERMINAL</h2>
             <button class="admin-action" onclick="showAdminModal()">Добавить монеты</button>
-            <button class="admin-action" onclick="adminResetCoins()" style="background:#ff8c00;">Обнулить баланс</button>
-            <button class="admin-action" onclick="adminResetPrices()" style="background:#555;">Сбросить цены магазина</button>
+            <button class="admin-action" onclick="adminResetCoins()">Обнулить баланс</button>
         </div>
     </div>
 
     <script>
-        // СПИСОК АДМИНОВ (ОБА ТВОИХ ID)
+        // ТВОИ КЛЮЧИ FIREBASE
+        const firebaseConfig = {
+          apiKey: "AIzaSyDONq9oNGkDTfuN3dP02VJH-...", 
+          authDomain: "fedyadaunclicker.firebaseapp.com",
+          projectId: "fedyadaunclicker",
+          storageBucket: "fedyadaunclicker.appspot.com",
+          messagingSenderId: "467420726390",
+          appId: "1:467420726390:web:cb16192884...",
+          databaseURL: "https://fedyadaunclicker-default-rtdb.firebaseio.com"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // АДМИНЫ И БАНЫ (ЗАМОРОЖЕНО)
         const ADMIN_IDS = ["ID-RLJV-KV0M", "ID-JILD-9NAM"];
-        // СПИСОК БАНОВ
         const bannedIDs = ["ID-TEST-0000"]; 
 
         let coins = 0, clickPower = 1, autoClickers = 0, clickPrice = 10, autoPrice = 50, playerUID = "";
-        const coinsDisplay = document.getElementById('coins');
-        const clickerImage = document.getElementById('clicker-image');
 
-        function generateUID() { return 'ID-' + Math.random().toString(36).substr(2, 4).toUpperCase() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase(); }
+        function loadPlayer() {
+            playerUID = localStorage.getItem('playerUID') || 'ID-' + Math.random().toString(36).substr(2, 4).toUpperCase() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+            localStorage.setItem('playerUID', playerUID);
+            document.getElementById('uid-value').innerText = playerUID;
 
-        function loadData() {
-            const savedCoins = localStorage.getItem('coins');
-            if (savedCoins !== null) {
-                coins = parseFloat(savedCoins);
-                clickPower = parseInt(localStorage.getItem('clickPower')) || 1;
-                autoClickers = parseInt(localStorage.getItem('autoClickers')) || 0;
-                clickPrice = parseInt(localStorage.getItem('clickPrice')) || 10;
-                autoPrice = parseInt(localStorage.getItem('autoPrice')) || 50;
-                playerUID = localStorage.getItem('playerUID');
-            }
-            if (!playerUID) { playerUID = generateUID(); localStorage.setItem('playerUID', playerUID); }
-            
             const currentID = playerUID.toUpperCase();
-            document.getElementById('uid-value').innerText = currentID;
+            if (bannedIDs.includes(currentID)) { document.getElementById('ban-screen').style.display = 'flex'; return; }
+            if (ADMIN_IDS.includes(currentID)) { document.getElementById('admin-btn').style.display = 'block'; }
 
-            // ПРОВЕРКА НА БАН
-            if (bannedIDs.includes(currentID)) {
-                document.getElementById('ban-screen').style.display = 'flex';
-                document.getElementById('banned-id-info').innerText = "ID: " + currentID;
-                return;
-            }
-
-            // ПРОВЕРКА НА АДМИНКУ (ДЛЯ ОБОИХ ID)
-            if (ADMIN_IDS.includes(currentID)) { 
-                document.getElementById('admin-btn').style.display = 'block'; 
-            }
-            
-            updateUI();
+            // Синхронизация с Firebase
+            db.ref('players/' + playerUID).on('value', (snap) => {
+                const data = snap.val();
+                if (data) {
+                    coins = data.coins || 0;
+                    clickPower = data.clickPower || 1;
+                    clickPrice = data.clickPrice || 10;
+                    autoClickers = data.autoClickers || 0;
+                    autoPrice = data.autoPrice || 50;
+                    updateUI();
+                } else { saveToCloud(); }
+            });
         }
 
-        function saveData() {
-            localStorage.setItem('coins', coins); localStorage.setItem('clickPower', clickPower);
-            localStorage.setItem('autoClickers', autoClickers); localStorage.setItem('clickPrice', clickPrice);
-            localStorage.setItem('autoPrice', autoPrice); localStorage.setItem('playerUID', playerUID);
+        function saveToCloud() {
+            db.ref('players/' + playerUID).set({ coins, clickPower, clickPrice, autoClickers, autoPrice });
+        }
+
+        function updateUI() {
+            document.getElementById('coins').innerText = Math.floor(coins).toLocaleString();
+            document.getElementById('click-price').innerText = clickPrice;
+            document.getElementById('auto-price').innerText = autoPrice;
+        }
+
+        document.getElementById('clicker-image').addEventListener('pointerdown', (e) => {
+            coins += clickPower; updateUI(); saveToCloud();
+            createPlusOne(e.clientX, e.clientY, clickPower);
+            if (window.navigator.vibrate) window.navigator.vibrate(10);
+        });
+
+        function buyUpgrade(type) {
+            if (type === 'click' && coins >= clickPrice) { coins -= clickPrice; clickPower++; clickPrice = Math.round(clickPrice * 1.6); }
+            if (type === 'auto' && coins >= autoPrice) { coins -= autoPrice; autoClickers++; autoPrice = Math.round(autoPrice * 1.8); }
+            saveToCloud();
         }
 
         function openTab(tabId, btn) {
@@ -218,51 +156,25 @@
             btn.classList.add('active');
         }
 
-        clickerImage.addEventListener('pointerdown', (e) => {
-            coins += clickPower; updateUI(); saveData();
-            createPlusOne(e.clientX, e.clientY, clickPower);
-            if (window.navigator.vibrate) window.navigator.vibrate(10);
-        });
-
-        function buyUpgrade(type) {
-            if (type === 'click' && coins >= clickPrice) { coins -= clickPrice; clickPower++; clickPrice = Math.round(clickPrice * 1.6); }
-            else if (type === 'auto' && coins >= autoPrice) { coins -= autoPrice; autoClickers++; autoPrice = Math.round(autoPrice * 1.8); }
-            updateUI(); saveData();
-        }
-
-        function updateUI() {
-            coinsDisplay.innerText = Math.floor(coins).toLocaleString();
-            document.getElementById('click-price').innerText = clickPrice;
-            document.getElementById('auto-price').innerText = autoPrice;
-            document.getElementById('btn-upgrade-click').disabled = coins < clickPrice;
-            document.getElementById('btn-upgrade-auto').disabled = coins < autoPrice;
-        }
-
         function showAdminModal() { document.getElementById('modal-admin').style.display = 'flex'; }
+        function closeModals() { document.getElementById('modal-admin').style.display = 'none'; }
         function confirmAdminAdd() {
             const val = parseInt(document.getElementById('admin-input').value);
-            if (!isNaN(val) && val > 0) {
-                coins += val; updateUI(); saveData(); closeModals();
-                document.getElementById('admin-input').value = "";
-            }
+            if (!isNaN(val)) { coins += val; saveToCloud(); closeModals(); }
         }
-        function adminResetCoins() { coins = 0; updateUI(); saveData(); }
-        function adminResetPrices() { clickPrice = 10; autoPrice = 50; updateUI(); saveData(); }
-        function showResetModal() { document.getElementById('modal-reset').style.display = 'flex'; }
-        function closeModals() { document.getElementById('modal-reset').style.display = 'none'; document.getElementById('modal-admin').style.display = 'none'; }
-        function confirmReset() { localStorage.clear(); location.reload(); }
+        function adminResetCoins() { coins = 0; saveToCloud(); }
 
-        setInterval(() => { if (autoClickers > 0) { coins += autoClickers; updateUI(); saveData(); } }, 1000);
+        setInterval(() => { if (autoClickers > 0) { coins += autoClickers; updateUI(); saveToCloud(); } }, 1000);
 
         function createPlusOne(x, y, val) {
             const plus = document.createElement('div');
             plus.innerText = '+' + val; plus.className = 'plus-one';
-            plus.style.left = (x - 20) + 'px'; plus.style.top = (y - 20) + 'px';
+            plus.style.left = x + 'px'; plus.style.top = y + 'px';
             document.body.appendChild(plus);
             setTimeout(() => plus.remove(), 600);
         }
 
-        window.onload = loadData;
+        window.onload = loadPlayer;
     </script>
 </body>
 </html>
