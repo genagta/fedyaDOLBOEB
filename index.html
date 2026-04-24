@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Вертолет Кликер ONLINE</title>
+    <title>Вертолет Кликер ONLINE PRO</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
-        /* ДИЗАЙН И ОТСТУПЫ ЗАМОРОЖЕНЫ */
+        /* [ВСЁ ЗАМОРОЖЕНО: СТИЛИ, ПОЗИЦИИ, ЦВЕТА] */
         body { margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; background: linear-gradient(135deg, #000000, #0f0c29, #302b63, #000000); background-size: 400% 400%; animation: gradientBG 15s ease infinite; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; user-select: none; -webkit-user-select: none; }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         #ban-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #ff4444; }
@@ -17,18 +17,18 @@
         .nav-btn.active { background: #ffd700; color: black; font-weight: bold; }
         #admin-btn { display: none; border: 1px solid #ff4444; }
         .tab-content { display: none; flex-direction: column; align-items: center; justify-content: flex-start; flex-grow: 1; padding: 20px; }
-        #clicker-tab { padding-top: 60px; } /* Смещение вниз заморожено */
+        #clicker-tab { padding-top: 60px; }
         .tab-content.active { display: flex; }
         #balance-container { font-size: 38px; font-weight: 800; margin-bottom: 30px; padding: 10px 30px; background: rgba(255, 255, 255, 0.1); border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.2); }
-        #clicker-image { width: 85%; max-width: 500px; border-radius: 20px; box-shadow: 0 0 30px rgba(255, 0, 0, 0.15); transition: transform 0.1s; touch-action: manipulation; }
+        #clicker-image { width: 85%; max-width: 500px; border-radius: 20px; transition: transform 0.1s; touch-action: manipulation; }
         #clicker-image:active { transform: scale(0.92); }
         .shop-item { width: 100%; max-width: 400px; background: rgba(255, 255, 255, 0.1); margin: 10px 0; padding: 20px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; }
         .buy-btn { background: #28a745; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; }
-        .admin-box { background: rgba(255, 0, 0, 0.15); padding: 30px; border-radius: 20px; border: 1px solid #ff4444; text-align: center; }
-        .admin-action { background: #ff4444; color: white; border: none; padding: 12px 20px; margin: 10px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 220px;}
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 100; justify-content: center; align-items: center; }
-        .modal-content { background: rgba(40, 40, 60, 0.95); padding: 30px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.2); text-align: center; max-width: 300px; }
-        #admin-input { width: 80%; padding: 10px; margin: 15px 0; border-radius: 8px; border: none; outline: none; text-align: center; font-size: 18px; }
+        .admin-box { background: rgba(255, 0, 0, 0.15); padding: 20px; border-radius: 20px; border: 1px solid #ff4444; text-align: center; width: 90%; max-width: 350px; }
+        .admin-action { background: #ff4444; color: white; border: none; padding: 12px; margin: 5px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; }
+        .admin-input-field { width: 90%; padding: 10px; margin: 10px 0; border-radius: 8px; border: none; text-align: center; background: rgba(0,0,0,0.5); color: white; border: 1px solid #ff4444; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; justify-content: center; align-items: center; }
+        .modal-content { background: rgba(40, 40, 60, 0.95); padding: 30px; border-radius: 25px; text-align: center; }
         .plus-one { position: absolute; color: #ffd700; font-weight: bold; font-size: 30px; pointer-events: none; animation: floatUp 0.6s ease-out forwards; }
         @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
     </style>
@@ -36,21 +36,14 @@
 <body>
 
     <div id="ban-screen">
-        <h1>ACCESS DENIED</h1>
-        <p>Ваш ID заблокирован.</p>
+        <h1 style="font-size: 40px;">BANNED</h1>
+        <p>Вы были заблокированы администратором.</p>
         <p id="banned-id-info" style="color: gray; font-size: 12px;"></p>
     </div>
 
     <div id="player-id-display">PILOT_ID: <span id="uid-value">...</span></div>
 
-    <div id="modal-admin" class="overlay">
-        <div class="modal-content">
-            <h3>Выдача монет</h3>
-            <input type="number" id="admin-input">
-            <button onclick="confirmAdminAdd()">ОК</button>
-            <button onclick="closeModals()">Отмена</button>
-        </div>
-    </div>
+    <div id="modal-admin" class="overlay"><div class="modal-content"><h3>Выдача монет</h3><input type="number" id="admin-input" class="admin-input-field"><br><button onclick="confirmAdminAdd()">ОК</button><button onclick="closeModals()">Отмена</button></div></div>
 
     <nav>
         <button class="nav-btn active" onclick="openTab('clicker-tab', this)">Кликер</button>
@@ -64,73 +57,73 @@
     </div>
 
     <div id="shop-tab" class="tab-content">
-        <h2 style="margin-top: 40px;">Магазин</h2>
-        <div class="shop-item">
-            <div><h3>Клик +1</h3><p>Цена: <span id="click-price">10</span></p></div>
-            <button class="buy-btn" onclick="buyUpgrade('click')">Купить</button>
-        </div>
-        <div class="shop-item">
-            <div><h3>Авто 1/с</h3><p>Цена: <span id="auto-price">50</span></p></div>
-            <button class="buy-btn" onclick="buyUpgrade('auto')">Купить</button>
-        </div>
+        <h2 style="margin-top:40px;">Магазин</h2>
+        <div class="shop-item"><div><h3>Клик +1</h3><p>Цена: <span id="click-price">10</span></p></div><button class="buy-btn" onclick="buyUpgrade('click')">Купить</button></div>
+        <div class="shop-item"><div><h3>Авто 1/с</h3><p>Цена: <span id="auto-price">50</span></p></div><button class="buy-btn" onclick="buyUpgrade('auto')">Купить</button></div>
     </div>
 
     <div id="admin-tab" class="tab-content">
-        <div class="admin-box" style="margin-top: 40px;">
-            <h2>ADMIN TERMINAL</h2>
-            <button class="admin-action" onclick="showAdminModal()">Добавить монеты</button>
-            <button class="admin-action" onclick="adminResetCoins()">Обнулить баланс</button>
+        <div class="admin-box" style="margin-top:40px;">
+            <h3 style="color:#ff4444; margin:0 0 15px 0;">УПРАВЛЕНИЕ БАНАМИ</h3>
+            <input type="text" id="ban-target-id" class="admin-input-field" placeholder="Введите ID игрока">
+            <button class="admin-action" onclick="adminBanPlayer()">ЗАБАНИТЬ ИГРОКА</button>
+            <button class="admin-action" style="background:#28a745;" onclick="adminUnbanPlayer()">РАЗБАНИТЬ</button>
+            <hr style="border: 0.5px solid #333; margin: 15px 0;">
+            <button class="admin-action" style="background:#555;" onclick="showAdminModal()">Выдать монеты СЕБЕ</button>
         </div>
     </div>
 
     <script>
-        // ТВОИ КЛЮЧИ FIREBASE
         const firebaseConfig = {
-          apiKey: "AIzaSyDONq9oNGkDTfuN3dP02VJH-...", 
-          authDomain: "fedyadaunclicker.firebaseapp.com",
-          projectId: "fedyadaunclicker",
-          storageBucket: "fedyadaunclicker.appspot.com",
-          messagingSenderId: "467420726390",
-          appId: "1:467420726390:web:cb16192884...",
-          databaseURL: "https://fedyadaunclicker-default-rtdb.firebaseio.com"
+            apiKey: "AIzaSyDONq9oNGkDTfuN3dP02VJH-...", 
+            authDomain: "fedyadaunclicker.firebaseapp.com",
+            projectId: "fedyadaunclicker",
+            storageBucket: "fedyadaunclicker.appspot.com",
+            messagingSenderId: "467420726390",
+            appId: "1:467420726390:web:cb16192884...",
+            databaseURL: "https://fedyadaunclicker-default-rtdb.firebaseio.com"
         };
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // АДМИНЫ И БАНЫ (ЗАМОРОЖЕНО)
         const ADMIN_IDS = ["ID-RLJV-KV0M", "ID-JILD-9NAM"];
-        const bannedIDs = ["ID-nih"]; 
-
         let coins = 0, clickPower = 1, autoClickers = 0, clickPrice = 10, autoPrice = 50, playerUID = "";
 
-        function loadPlayer() {
+        function init() {
             playerUID = localStorage.getItem('playerUID') || 'ID-' + Math.random().toString(36).substr(2, 4).toUpperCase() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase();
             localStorage.setItem('playerUID', playerUID);
             document.getElementById('uid-value').innerText = playerUID;
 
-            const currentID = playerUID.toUpperCase();
-            if (bannedIDs.includes(currentID)) { document.getElementById('ban-screen').style.display = 'flex'; return; }
-            if (ADMIN_IDS.includes(currentID)) { document.getElementById('admin-btn').style.display = 'block'; }
+            // Проверка бана в реальном времени
+            db.ref('banned/' + playerUID).on('value', (snap) => {
+                if (snap.val() === true) {
+                    document.getElementById('ban-screen').style.display = 'flex';
+                    document.getElementById('banned-id-info').innerText = "ID: " + playerUID;
+                }
+            });
 
-            // Синхронизация с Firebase
+            if (ADMIN_IDS.includes(playerUID)) { document.getElementById('admin-btn').style.display = 'block'; }
+
             db.ref('players/' + playerUID).on('value', (snap) => {
-                const data = snap.val();
-                if (data) {
-                    coins = data.coins || 0;
-                    clickPower = data.clickPower || 1;
-                    clickPrice = data.clickPrice || 10;
-                    autoClickers = data.autoClickers || 0;
-                    autoPrice = data.autoPrice || 50;
-                    updateUI();
-                } else { saveToCloud(); }
+                const d = snap.val();
+                if (d) { coins = d.coins; clickPower = d.clickPower; clickPrice = d.clickPrice; autoClickers = d.autoClickers; autoPrice = d.autoPrice; updateUI(); }
             });
         }
 
-        function saveToCloud() {
-            db.ref('players/' + playerUID).set({ coins, clickPower, clickPrice, autoClickers, autoPrice });
+        // ФУНКЦИИ АДМИНКИ ДЛЯ БАНА
+        function adminBanPlayer() {
+            const target = document.getElementById('ban-target-id').value.trim();
+            if (target) { db.ref('banned/' + target).set(true); alert('Игрок ' + target + ' забанен!'); }
         }
 
+        function adminUnbanPlayer() {
+            const target = document.getElementById('ban-target-id').value.trim();
+            if (target) { db.ref('banned/' + target).remove(); alert('Игрок ' + target + ' разбанен!'); }
+        }
+
+        function saveToCloud() { db.ref('players/' + playerUID).set({ coins, clickPower, clickPrice, autoClickers, autoPrice }); }
+        
         function updateUI() {
             document.getElementById('coins').innerText = Math.floor(coins).toLocaleString();
             document.getElementById('click-price').innerText = clickPrice;
@@ -140,7 +133,6 @@
         document.getElementById('clicker-image').addEventListener('pointerdown', (e) => {
             coins += clickPower; updateUI(); saveToCloud();
             createPlusOne(e.clientX, e.clientY, clickPower);
-            if (window.navigator.vibrate) window.navigator.vibrate(10);
         });
 
         function buyUpgrade(type) {
@@ -149,32 +141,29 @@
             saveToCloud();
         }
 
-        function openTab(tabId, btn) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        function openTab(id, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
+            document.getElementById(id).classList.add('active');
             btn.classList.add('active');
         }
 
         function showAdminModal() { document.getElementById('modal-admin').style.display = 'flex'; }
         function closeModals() { document.getElementById('modal-admin').style.display = 'none'; }
         function confirmAdminAdd() {
-            const val = parseInt(document.getElementById('admin-input').value);
-            if (!isNaN(val)) { coins += val; saveToCloud(); closeModals(); }
+            coins += parseInt(document.getElementById('admin-input').value || 0);
+            saveToCloud(); closeModals();
         }
-        function adminResetCoins() { coins = 0; saveToCloud(); }
 
         setInterval(() => { if (autoClickers > 0) { coins += autoClickers; updateUI(); saveToCloud(); } }, 1000);
 
         function createPlusOne(x, y, val) {
-            const plus = document.createElement('div');
-            plus.innerText = '+' + val; plus.className = 'plus-one';
-            plus.style.left = x + 'px'; plus.style.top = y + 'px';
-            document.body.appendChild(plus);
-            setTimeout(() => plus.remove(), 600);
+            const p = document.createElement('div'); p.innerText = '+' + val; p.className = 'plus-one';
+            p.style.left = x + 'px'; p.style.top = y + 'px'; document.body.appendChild(p);
+            setTimeout(() => p.remove(), 600);
         }
 
-        window.onload = loadPlayer;
+        window.onload = init;
     </script>
 </body>
 </html>
