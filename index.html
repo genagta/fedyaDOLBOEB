@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Вертолет Кликер PRO + Position Fix</title>
+    <title>Вертолет Кликер PRO + Multi-Admin</title>
     <style>
-        /* [БАЗОВЫЙ ДИЗАЙН ЗАМОРОЖЕН] */
+        /* [ВСЕ СТИЛИ ЗАМОРОЖЕНЫ] */
         body {
             margin: 0; padding: 0; height: 100vh;
             display: flex; flex-direction: column;
@@ -53,15 +53,11 @@
 
         .tab-content {
             display: none; flex-direction: column;
-            align-items: center; justify-content: flex-start; /* Изменено для смещения */
+            align-items: center; justify-content: flex-start;
             flex-grow: 1; padding: 20px;
         }
 
-        /* [СМЕЩЕНИЕ БАЛАНСА И КНОПКИ НИЖЕ - ЗАМОРОЖЕНО] */
-        #clicker-tab {
-            padding-top: 60px; /* Опускаем содержимое вниз */
-        }
-
+        #clicker-tab { padding-top: 60px; }
         .tab-content.active { display: flex; }
 
         #balance-container {
@@ -168,35 +164,44 @@
     </div>
 
     <script>
-        const ADMIN_ID = "ID-JILD-9NAM";
-        const bannedIDs = ["ID-RLJV-KV0M", "ID-BAD-USER"]; 
+        // СПИСОК АДМИНОВ (ОБА ТВОИХ ID)
+        const ADMIN_IDS = ["ID-RLJV-KV0M", "ID-JILD-9NAM"];
+        // СПИСОК БАНОВ
+        const bannedIDs = ["ID-TEST-0000"]; 
 
         let coins = 0, clickPower = 1, autoClickers = 0, clickPrice = 10, autoPrice = 50, playerUID = "";
         const coinsDisplay = document.getElementById('coins');
         const clickerImage = document.getElementById('clicker-image');
 
-        function generateUID() { return 'ID-' + Math.random().toString(36).substr(2, 4) + '-' + Math.random().toString(36).substr(2, 4); }
+        function generateUID() { return 'ID-' + Math.random().toString(36).substr(2, 4).toUpperCase() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase(); }
 
         function loadData() {
             const savedCoins = localStorage.getItem('coins');
             if (savedCoins !== null) {
                 coins = parseFloat(savedCoins);
-                clickPower = parseInt(localStorage.getItem('clickPower'));
-                autoClickers = parseInt(localStorage.getItem('autoClickers'));
-                clickPrice = parseInt(localStorage.getItem('clickPrice'));
-                autoPrice = parseInt(localStorage.getItem('autoPrice'));
+                clickPower = parseInt(localStorage.getItem('clickPower')) || 1;
+                autoClickers = parseInt(localStorage.getItem('autoClickers')) || 0;
+                clickPrice = parseInt(localStorage.getItem('clickPrice')) || 10;
+                autoPrice = parseInt(localStorage.getItem('autoPrice')) || 50;
                 playerUID = localStorage.getItem('playerUID');
             }
             if (!playerUID) { playerUID = generateUID(); localStorage.setItem('playerUID', playerUID); }
-            document.getElementById('uid-value').innerText = playerUID.toUpperCase();
+            
+            const currentID = playerUID.toUpperCase();
+            document.getElementById('uid-value').innerText = currentID;
 
-            if (bannedIDs.includes(playerUID.toUpperCase())) {
+            // ПРОВЕРКА НА БАН
+            if (bannedIDs.includes(currentID)) {
                 document.getElementById('ban-screen').style.display = 'flex';
-                document.getElementById('banned-id-info').innerText = "ID: " + playerUID.toUpperCase();
+                document.getElementById('banned-id-info').innerText = "ID: " + currentID;
                 return;
             }
 
-            if (playerUID.toUpperCase() === ADMIN_ID) { document.getElementById('admin-btn').style.display = 'block'; }
+            // ПРОВЕРКА НА АДМИНКУ (ДЛЯ ОБОИХ ID)
+            if (ADMIN_IDS.includes(currentID)) { 
+                document.getElementById('admin-btn').style.display = 'block'; 
+            }
+            
             updateUI();
         }
 
