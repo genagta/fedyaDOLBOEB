@@ -7,7 +7,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
-        /* [ДИЗАЙН И ПОЗИЦИИ ЗАМОРОЖЕНЫ] */
+        /* [ВСЁ ЗАМОРОЖЕНО: СТИЛИ, ПОЗИЦИИ] */
         body { margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; background: linear-gradient(135deg, #000000, #0f0c29, #302b63, #000000); background-size: 400% 400%; animation: gradientBG 15s ease infinite; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; user-select: none; -webkit-user-select: none; }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         #ban-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #ff4444; }
@@ -22,13 +22,24 @@
         #balance-container { font-size: 38px; font-weight: 800; margin-bottom: 30px; padding: 10px 30px; background: rgba(255, 255, 255, 0.1); border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.2); }
         #clicker-image { width: 85%; max-width: 500px; border-radius: 20px; box-shadow: 0 0 30px rgba(255, 0, 0, 0.15); transition: transform 0.1s; touch-action: manipulation; }
         #clicker-image:active { transform: scale(0.92); }
+
+        #nick-display-btn { margin-top: 25px; padding: 10px 20px; background: rgba(255, 215, 0, 0.1); border: 1px solid #ffd700; color: #ffd700; border-radius: 10px; font-size: 14px; cursor: pointer; transition: 0.3s; }
+        
+        /* НОВАЯ НАДПИСЬ MODDED */
+        #modded-tag { color: #ff4444; font-size: 12px; font-weight: bold; margin-top: 8px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(255, 68, 68, 0.5); font-family: monospace; }
+
         .shop-item { width: 100%; max-width: 400px; background: rgba(255, 255, 255, 0.1); margin: 10px 0; padding: 20px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; }
         .buy-btn { background: #28a745; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; }
+        
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 100; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
+        .overlay.show { display: flex; opacity: 1; }
+        .modal-content { background: rgba(40, 40, 60, 0.95); padding: 30px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.2); text-align: center; transform: scale(0.8); transition: transform 0.3s ease; }
+        .overlay.show .modal-content { transform: scale(1); }
+        
+        .admin-input-field { width: 90%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #555; background: #111; color: white; text-align: center; font-size: 16px; }
         .admin-box { background: rgba(255, 0, 0, 0.15); padding: 20px; border-radius: 20px; border: 1px solid #ff4444; text-align: center; width: 90%; max-width: 350px; }
         .admin-action { background: #ff4444; color: white; border: none; padding: 12px; margin: 5px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; }
-        .admin-input-field { width: 90%; padding: 10px; margin: 10px 0; border-radius: 8px; border: none; text-align: center; background: rgba(0,0,0,0.5); color: white; border: 1px solid #ff4444; }
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 100; justify-content: center; align-items: center; }
-        .modal-content { background: rgba(40, 40, 60, 0.95); padding: 30px; border-radius: 25px; text-align: center; }
+        
         .plus-one { position: absolute; color: #ffd700; font-weight: bold; font-size: 30px; pointer-events: none; animation: floatUp 0.6s ease-out forwards; }
         @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
     </style>
@@ -42,6 +53,16 @@
     </div>
 
     <div id="player-id-display">PILOT_ID: <span id="uid-value">...</span></div>
+
+    <div id="modal-nick" class="overlay">
+        <div class="modal-content">
+            <h3 style="margin-top:0;">Ваш позывной</h3>
+            <input type="text" id="nick-input" class="admin-input-field" placeholder="Введите ник..." maxlength="15">
+            <br>
+            <button onclick="saveNickname()" style="background:#ffd700; color:black; padding:12px 25px; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">СОХРАНИТЬ</button>
+            <button onclick="closeNickModal()" style="background:none; color:#aaa; border:none; margin-top:15px; cursor:pointer; display:block; width:100%;">Закрыть</button>
+        </div>
+    </div>
 
     <div id="modal-admin" class="overlay">
         <div class="modal-content">
@@ -62,7 +83,8 @@
     <div id="clicker-tab" class="tab-content active">
         <div id="balance-container"><span id="coins">0</span> 🪙</div>
         <img src="image.png" alt="Clicker" id="clicker-image">
-    </div>
+        <button id="nick-display-btn" onclick="openNickModal()">НИКНЕЙМ: <span id="current-nick">Пилот</span></button>
+        <div id="modded-tag">modded</div> </div>
 
     <div id="shop-tab" class="tab-content">
         <h2 style="margin-top: 40px;">Магазин</h2>
@@ -82,7 +104,6 @@
     </div>
 
     <script>
-        // ДАННЫЕ FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyDONq9oNGkDTfuN3dP02VJH-...", 
             authDomain: "fedyadaunclicker.firebaseapp.com",
@@ -96,18 +117,15 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // СПИСОК АДМИНОВ
         const ADMIN_IDS = ["ID-RLJV-KV0M", "ID-JILD-9NAM"];
-        let coins = 0, clickPower = 1, autoClickers = 0, clickPrice = 10, autoPrice = 50, playerUID = "";
+        let coins = 0, clickPower = 1, autoClickers = 0, clickPrice = 10, autoPrice = 50, playerUID = "", nickname = "Пилот";
 
         function init() {
             playerUID = localStorage.getItem('playerUID') || 'ID-' + Math.random().toString(36).substr(2, 4).toUpperCase() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase();
             localStorage.setItem('playerUID', playerUID);
             document.getElementById('uid-value').innerText = playerUID;
-
             const currentID = playerUID.toUpperCase();
 
-            // Проверка бана в реальном времени из Firebase
             db.ref('banned/' + currentID).on('value', (snap) => {
                 if (snap.val() === true) {
                     document.getElementById('ban-screen').style.display = 'flex';
@@ -115,45 +133,43 @@
                 }
             });
 
-            // Показ кнопки админа
-            if (ADMIN_IDS.includes(currentID)) {
-                document.getElementById('admin-btn').style.display = 'block';
-            }
+            if (ADMIN_IDS.includes(currentID)) { document.getElementById('admin-btn').style.display = 'block'; }
 
-            // Загрузка данных из облака
             db.ref('players/' + playerUID).on('value', (snap) => {
                 const d = snap.val();
                 if (d) {
-                    coins = d.coins || 0;
-                    clickPower = d.clickPower || 1;
-                    clickPrice = d.clickPrice || 10;
-                    autoClickers = d.autoClickers || 0;
-                    autoPrice = d.autoPrice || 50;
+                    coins = d.coins || 0; clickPower = d.clickPower || 1;
+                    clickPrice = d.clickPrice || 10; autoClickers = d.autoClickers || 0;
+                    autoPrice = d.autoPrice || 50; nickname = d.nickname || "Пилот";
                     updateUI();
                 } else { saveToCloud(); }
             });
         }
 
         function saveToCloud() {
-            db.ref('players/' + playerUID).set({ coins, clickPower, clickPrice, autoClickers, autoPrice });
+            db.ref('players/' + playerUID).set({ coins, clickPower, clickPrice, autoClickers, autoPrice, nickname });
         }
 
         function updateUI() {
             document.getElementById('coins').innerText = Math.floor(coins).toLocaleString();
             document.getElementById('click-price').innerText = clickPrice;
             document.getElementById('auto-price').innerText = autoPrice;
+            document.getElementById('current-nick').innerText = nickname;
         }
 
-        // КЛИКЕР
+        function openNickModal() { document.getElementById('modal-nick').classList.add('show'); }
+        function closeNickModal() { document.getElementById('modal-nick').classList.remove('show'); }
+        function saveNickname() {
+            const val = document.getElementById('nick-input').value.trim();
+            if (val) { nickname = val; updateUI(); saveToCloud(); closeNickModal(); }
+        }
+
         document.getElementById('clicker-image').addEventListener('pointerdown', (e) => {
-            coins += clickPower;
-            updateUI();
-            saveToCloud();
+            coins += clickPower; updateUI(); saveToCloud();
             createPlusOne(e.clientX, e.clientY, clickPower);
             if (window.navigator.vibrate) window.navigator.vibrate(10);
         });
 
-        // МАГАЗИН
         function buyUpgrade(type) {
             if (type === 'click' && coins >= clickPrice) { coins -= clickPrice; clickPower++; clickPrice = Math.round(clickPrice * 1.6); }
             if (type === 'auto' && coins >= autoPrice) { coins -= autoPrice; autoClickers++; autoPrice = Math.round(autoPrice * 1.8); }
@@ -167,25 +183,21 @@
             btn.classList.add('active');
         }
 
-        // АДМИН-ФУНКЦИИ
         function adminBanPlayer() {
             const target = document.getElementById('ban-target-id').value.trim().toUpperCase();
             if (target) { db.ref('banned/' + target).set(true); alert('Игрок ' + target + ' забанен!'); }
         }
-
         function adminUnbanPlayer() {
             const target = document.getElementById('ban-target-id').value.trim().toUpperCase();
             if (target) { db.ref('banned/' + target).remove(); alert('Игрок ' + target + ' разбанен!'); }
         }
-
-        function showAdminModal() { document.getElementById('modal-admin').style.display = 'flex'; }
-        function closeModals() { document.getElementById('modal-admin').style.display = 'none'; }
+        function showAdminModal() { document.getElementById('modal-admin').classList.add('show'); }
+        function closeModals() { document.getElementById('modal-admin').classList.remove('show'); }
         function confirmAdminAdd() {
             const val = parseInt(document.getElementById('admin-input').value);
             if (!isNaN(val)) { coins += val; saveToCloud(); closeModals(); }
         }
 
-        // АВТОКЛИК
         setInterval(() => { if (autoClickers > 0) { coins += autoClickers; updateUI(); saveToCloud(); } }, 1000);
 
         function createPlusOne(x, y, val) {
