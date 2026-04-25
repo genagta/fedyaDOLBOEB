@@ -268,13 +268,11 @@
         
         function confirmFairPlay() { 
             document.getElementById('modal-fair-play').classList.remove('show'); 
-            // Переводим лобби в состояние игры
             if (currentLobbyID) {
                 db.ref('chess_lobbies/' + currentLobbyID).update({ status: 'playing', fen: 'start' });
             }
         }
 
-        // Логика старта самой игры
         function startChessGame(data) {
             document.getElementById('chess-room-screen').style.display = 'none';
             document.getElementById('chess-game-screen').style.display = 'flex';
@@ -282,20 +280,16 @@
             const players = data.players;
             const pKeys = Object.keys(players);
             
-            // Определяем кто за кого (создатель лобби всегда белые для простоты)
             myColor = (data.owner === playerUID) ? 'w' : 'b';
             
-            // Ищем оппонента
             const oppID = pKeys.find(id => id !== playerUID);
-            const oppData = players[oppID];
+            const oppData = players[oppID] || { nickname: "Оппонент", elo: 1000, uid: "" };
 
-            // Отрисовка инфо оппонента (верхняя панель)
             const oppNickSpan = document.getElementById('opp-nick');
             oppNickSpan.innerText = oppData.nickname;
             if (ADMIN_IDS.includes(oppData.uid.toUpperCase())) oppNickSpan.className = "chess-nick nick-gold-shine";
             document.getElementById('opp-elo').innerText = oppData.elo + " ELO";
 
-            // Отрисовка моего инфо (нижняя панель)
             const myNickSpan = document.getElementById('my-chess-nick');
             let myDisplayName = nickname;
             if (ADMIN_IDS.includes(playerUID.toUpperCase())) {
@@ -305,38 +299,34 @@
             myNickSpan.innerText = myDisplayName;
             document.getElementById('my-chess-elo').innerText = playerElo + " ELO";
 
-            // Инициализация доски
             const config = {
                 draggable: true,
-                position: 'start',
+                position: data.fen === 'start' ? 'start' : data.fen,
                 orientation: myColor === 'w' ? 'white' : 'black',
                 onDragStart: onDragStart,
                 onDrop: onDrop,
-                snapEndSpeed: 40,
+                onSnapEnd: onSnapEnd,
                 pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
             };
             board = Chessboard('chess-board', config);
-            game = new Chess();
+            game = new Chess(data.fen === 'start' ? undefined : data.fen);
 
-            // Слушаем ходы из базы
             db.ref('chess_lobbies/' + currentLobbyID + '/fen').on('value', (snap) => {
                 const fen = snap.val();
-                if (fen && fen !== 'start') {
+                if (fen && fen !== 'start' && fen !== game.fen()) {
                     game.load(fen);
                     board.position(fen);
+                    checkGameOver();
                 }
             });
         }
 
         function onDragStart (source, piece, position, orientation) {
-            // Не даем двигать если игра окончена
             if (game.game_over()) return false;
-            // Не даем двигать чужие фигуры
             if ((myColor === 'w' && piece.search(/^b/) !== -1) ||
                 (myColor === 'b' && piece.search(/^w/) !== -1)) {
                 return false;
             }
-            // Только свой ход
             if ((game.turn() === 'w' && myColor !== 'w') ||
                 (game.turn() === 'b' && myColor !== 'b')) {
                 return false;
@@ -347,30 +337,41 @@
             let move = game.move({
                 from: source,
                 to: target,
-                promotion: 'q' // всегда в королеву для простоты на мобилках
+                promotion: 'q'
             });
 
             if (move === null) return 'snapback';
 
-            // Отправляем ход в базу
             db.ref('chess_lobbies/' + currentLobbyID).update({ fen: game.fen() });
             checkGameOver();
         }
 
+        function onSnapEnd () {
+            board.position(game.fen());
+        }
         function checkGameOver() {
             if (game.game_over()) {
-                alert('Игра окончена!');
+                let status = "";
+                if (game.in_checkmate()) status = "Мат! Игра окончена.";
+                else if (game.in_draw()) status = "Ничья!";
+                else status = "Игра окончена.";
+                
+                alert(status);
+                // Начисляем немного монет за завершение партии
+                coins += 50;
+                saveToCloud();
                 leaveLobby();
             }
         }
 
         function surrenderGame() {
-            if (confirm("Сдаться?")) {
+            if (confirm("Сдаться? Вы потеряете 15 ELO.")) {
+                playerElo = Math.max(0, playerElo - 15);
+                saveToCloud();
                 leaveLobby();
             }
         }
 
-        // [ПРОДОЛЖЕНИЕ ТВОИХ ФУНКЦИЙ БЕЗ ИЗМЕНЕНИЙ]
         async function openLeaderModal() {
             document.getElementById('modal-leaderboard').classList.add('show');
             const listDiv = document.getElementById('leader-list');
@@ -392,7 +393,19 @@
                 }
             });
         }
-        function saveToCloud() { db.ref('players/' + playerUID).set({ uid: playerUID, coins, clickPower, clickPrice, autoClickers, autoPrice, nickname, elo: playerElo }); }
+
+        function saveToCloud() { 
+            db.ref('players/' + playerUID).update({ 
+                uid: playerUID, 
+                coins: coins, 
+                clickPower: clickPower, 
+                clickPrice: clickPrice, 
+                autoClickers: autoClickers, 
+                autoPrice: autoPrice, 
+                nickname: nickname, 
+                elo: playerElo 
+            }); 
+        }
         
         function updateUI() {
             document.getElementById('coins').innerText = Math.floor(coins).toLocaleString();
@@ -414,6 +427,7 @@
         function listenToOpenLobbies() {
             db.ref('chess_lobbies').on('value', (snap) => {
                 const lobbiesList = document.getElementById('active-lobbies-list');
+                if (!lobbiesList) return;
                 lobbiesList.innerHTML = "";
                 let hasOpen = false;
                 snap.forEach((child) => {
@@ -436,31 +450,50 @@
             lobbyPrivacy = type;
             document.getElementById('btn-open').classList.remove('active');
             document.getElementById('btn-private').classList.remove('active');
-            if(type === 'open') { document.getElementById('btn-open').classList.add('active'); document.getElementById('password-group').style.display = 'none'; }
-            else { document.getElementById('btn-private').classList.add('active'); document.getElementById('password-group').style.display = 'flex'; }
+            if(type === 'open') { 
+                document.getElementById('btn-open').classList.add('active'); 
+                document.getElementById('password-group').style.display = 'none'; 
+            } else { 
+                document.getElementById('btn-private').classList.add('active'); 
+                document.getElementById('password-group').style.display = 'flex'; 
+            }
         }
 
         function confirmCreateLobby() {
             const name = document.getElementById('lobby-name').value.trim() || "Лобби " + playerUID.slice(-4);
             const pass = document.getElementById('lobby-pass').value;
             const lobbyID = 'ROOM-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-            db.ref('chess_lobbies/' + lobbyID).set({ id: lobbyID, name, owner: playerUID, type: lobbyPrivacy, password: lobbyPrivacy === 'private' ? pass : null, players: {}, status: 'waiting' }).then(() => joinLobby(lobbyID));
+            db.ref('chess_lobbies/' + lobbyID).set({ 
+                id: lobbyID, 
+                name: name, 
+                owner: playerUID, 
+                type: lobbyPrivacy, 
+                password: lobbyPrivacy === 'private' ? pass : null, 
+                players: {}, 
+                status: 'waiting',
+                fen: 'start'
+            }).then(() => joinLobby(lobbyID));
         }
 
         function joinLobby(lobbyID) {
             currentLobbyID = lobbyID;
-            db.ref('chess_lobbies/' + lobbyID + '/players/' + playerUID).set({ uid: playerUID, nickname: nickname, elo: playerElo });
+            db.ref('chess_lobbies/' + lobbyID + '/players/' + playerUID).set({ 
+                uid: playerUID, 
+                nickname: nickname, 
+                elo: playerElo 
+            });
             
             db.ref('chess_lobbies/' + lobbyID).on('value', (snap) => { 
                 const data = snap.val(); 
                 if (data) {
-                    // Если статус сменился на playing - запускаем доску
                     if (data.status === 'playing') {
                         startChessGame(data);
                     } else {
                         renderRoom(data); 
                     }
-                } 
+                } else {
+                    resetChessUI();
+                }
             });
             document.getElementById('chess-lobby-screen').style.display = 'none';
             document.getElementById('chess-setup-screen').style.display = 'none';
@@ -496,7 +529,14 @@
             resetChessUI(); 
         }
 
-        function manualJoinLobby() { const name = document.getElementById('join-name').value.trim(); db.ref('chess_lobbies').once('value', (snap) => { let found = false; snap.forEach(child => { if (child.val().name === name) { joinLobby(child.key); found = true; } }); if (!found) alert("Лобби не найдено"); }); }
+        function manualJoinLobby() { 
+            const name = document.getElementById('join-name').value.trim(); 
+            db.ref('chess_lobbies').once('value', (snap) => { 
+                let found = false; 
+                snap.forEach(child => { if (child.val().name === name) { joinLobby(child.key); found = true; } }); 
+                if (!found) alert("Лобби не найдено"); 
+            }); 
+        }
 
         function openChessLobby() { document.getElementById('chess-main-menu').style.display = 'none'; document.getElementById('chess-lobby-screen').style.display = 'flex'; }
         function closeChessLobby() { document.getElementById('chess-main-menu').style.display = 'flex'; document.getElementById('chess-lobby-screen').style.display = 'none'; }
@@ -511,7 +551,7 @@
             document.getElementById('chess-join-screen').style.display = 'none'; 
             document.getElementById('chess-room-screen').style.display = 'none'; 
             document.getElementById('chess-game-screen').style.display = 'none';
-            if (board) board.destroy();
+            if (board) { board.destroy(); board = null; }
         }
 
         function closeLeaderModal() { document.getElementById('modal-leaderboard').classList.remove('show'); }
