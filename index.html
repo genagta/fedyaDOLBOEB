@@ -12,71 +12,71 @@
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         #ban-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #ff4444; }
         #player-id-display { position: absolute; top: 85px; right: 15px; font-size: 10px; background: rgba(255, 255, 255, 0.05); padding: 5px 10px; border-radius: 5px; color: rgba(255, 255, 255, 0.4); letter-spacing: 1px; z-index: 5; border: 1px solid rgba(255, 255, 255, 0.1); }
-        nav { display: flex; justify-content: center; gap: 10px; padding: 20px; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); z-index: 10; }
-        .nav-btn { padding: 10px 25px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.1); color: white; border-radius: 12px; cursor: pointer; transition: 0.3s; }
-        .nav-btn.active { background: #ffd700; color: black; font-weight: bold; }
-        #admin-btn { display: none; border: 1px solid #ff4444; }
-        .tab-content { display: none; flex-direction: column; align-items: center; justify-content: flex-start; flex-grow: 1; padding: 20px; }
+        nav { display: flex; justify-content: center; gap: 5px; padding: 15px 10px; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); z-index: 10; flex-wrap: wrap; }
+        .nav-btn { padding: 8px 15px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.1); color: white; border-radius: 12px; cursor: pointer; transition: 0.3s; font-size: 13px; }
+        .nav-btn.active { background: #ffd700; color: black; font-weight: bold; border-color: #ffd700; }
+        #admin-btn { display: none; border: 1px solid #ff4444; color: #ff4444; }
+        .tab-content { display: none; flex-direction: column; align-items: center; justify-content: flex-start; flex-grow: 1; padding: 20px; overflow-y: auto; }
         #clicker-tab { padding-top: 60px; }
         .tab-content.active { display: flex; }
         #balance-container { font-size: 38px; font-weight: 800; margin-bottom: 30px; padding: 10px 30px; background: rgba(255, 255, 255, 0.1); border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.2); }
         #clicker-image { width: 85%; max-width: 500px; border-radius: 20px; box-shadow: 0 0 30px rgba(255, 0, 0, 0.15); transition: transform 0.1s; touch-action: manipulation; }
         #clicker-image:active { transform: scale(0.92); }
-
         #nick-display-btn { margin-top: 25px; padding: 10px 20px; background: rgba(255, 215, 0, 0.1); border: 1px solid #ffd700; color: #ffd700; border-radius: 10px; font-size: 14px; cursor: pointer; transition: 0.3s; }
-        
-        /* ТЭГ ТОЛЬКО ДЛЯ АДМИНОВ (Изначально скрыт) */
         #modded-tag { display: none; color: #ff4444; font-size: 12px; font-weight: bold; margin-top: 8px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(255, 68, 68, 0.5); font-family: monospace; }
+        #leaderboard-btn { margin-top: 10px; padding: 8px 15px; background: rgba(0, 150, 255, 0.1); border: 1px solid #0096ff; color: #0096ff; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
+        
+        /* ШАХМАТЫ */
+        .chess-menu { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 300px; margin-top: 30px; }
+        .chess-choice-btn { padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+        .btn-real { border-color: #ffffff; box-shadow: 0 0 15px rgba(255,255,255,0.1); }
+        .btn-troll { border-color: #ff00ff; color: #ff00ff; box-shadow: 0 0 15px rgba(255,0,255,0.1); }
+        
+        /* ЭКРАНЫ ЛОББИ */
+        #chess-lobby-screen, #chess-setup-screen, #chess-join-screen { display: none; flex-direction: column; align-items: center; width: 100%; }
+        .lobby-btn { width: 100%; max-width: 250px; padding: 15px; margin: 10px 0; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
+        .create-btn { background: #0096ff; color: white; box-shadow: 0 0 15px rgba(0, 150, 255, 0.4); }
+        .join-btn { background: rgba(0, 150, 255, 0.1); color: #0096ff; border: 1px solid #0096ff; }
+        .back-btn { background: rgba(255,255,255,0.1); color: #aaa; border: 1px solid rgba(255,255,255,0.2); margin-top: 20px; }
+        
+        /* ВЫБОР ПРИВАТНОСТИ И ПОЛЯ ВВОДА */
+        .privacy-toggle { display: flex; gap: 10px; width: 100%; max-width: 300px; margin-bottom: 20px; }
+        .toggle-btn { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .toggle-btn.active { background: #28a745; border-color: #28a745; box-shadow: 0 0 10px rgba(40, 167, 69, 0.4); }
+        
+        .lobby-input-group { width: 100%; max-width: 300px; display: flex; flex-direction: column; align-items: flex-start; gap: 5px; margin-bottom: 15px; }
+        .lobby-input-group label { font-size: 11px; color: #aaa; text-transform: uppercase; margin-left: 5px; }
+        .lobby-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: #111; color: white; box-sizing: border-box; }
+        #password-group { display: none; }
 
+        /* [ОСТАЛЬНОЕ ЗАМОРОЖЕНО] */
         .shop-item { width: 100%; max-width: 400px; background: rgba(255, 255, 255, 0.1); margin: 10px 0; padding: 20px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; }
         .buy-btn { background: #28a745; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; }
-        
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 100; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
         .overlay.show { display: flex; opacity: 1; }
-        .modal-content { background: rgba(40, 40, 60, 0.95); padding: 30px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.2); text-align: center; transform: scale(0.8); transition: transform 0.3s ease; }
-        .overlay.show .modal-content { transform: scale(1); }
-        
+        .modal-content { background: rgba(40, 40, 60, 0.95); padding: 30px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.2); text-align: center; transform: scale(0.8); transition: transform 0.3s ease; width: 80%; max-width: 300px; }
         .admin-input-field { width: 90%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #555; background: #111; color: white; text-align: center; font-size: 16px; }
         .admin-box { background: rgba(255, 0, 0, 0.15); padding: 20px; border-radius: 20px; border: 1px solid #ff4444; text-align: center; width: 90%; max-width: 350px; }
         .admin-action { background: #ff4444; color: white; border: none; padding: 12px; margin: 5px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; }
-        
         .plus-one { position: absolute; color: #ffd700; font-weight: bold; font-size: 30px; pointer-events: none; animation: floatUp 0.6s ease-out forwards; }
         @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
+        .leader-item { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 14px; align-items: center; }
+        .mod-badge { color: #ff4444; font-weight: bold; font-size: 10px; margin-right: 5px; border: 1px solid #ff4444; padding: 1px 4px; border-radius: 4px; }
     </style>
 </head>
 <body>
 
-    <div id="ban-screen">
-        <h1 style="font-size: 40px;">BANNED</h1>
-        <p>Ваш доступ заблокирован администратором.</p>
-        <p id="banned-id-info" style="color: gray; font-size: 12px;"></p>
-    </div>
-
+    <div id="ban-screen"><h1>BANNED</h1><p>Ваш доступ заблокирован.</p><p id="banned-id-info"></p></div>
     <div id="player-id-display">PILOT_ID: <span id="uid-value">...</span></div>
 
-    <div id="modal-nick" class="overlay">
-        <div class="modal-content">
-            <h3 style="margin-top:0;">Ваш позывной</h3>
-            <input type="text" id="nick-input" class="admin-input-field" placeholder="Введите ник..." maxlength="15">
-            <br>
-            <button onclick="saveNickname()" style="background:#ffd700; color:black; padding:12px 25px; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">СОХРАНИТЬ</button>
-            <button onclick="closeNickModal()" style="background:none; color:#aaa; border:none; margin-top:15px; cursor:pointer; display:block; width:100%;">Закрыть</button>
-        </div>
-    </div>
-
-    <div id="modal-admin" class="overlay">
-        <div class="modal-content">
-            <h3>Выдача монет</h3>
-            <input type="number" id="admin-input" class="admin-input-field">
-            <br>
-            <button onclick="confirmAdminAdd()" style="background:#28a745; color:white; padding:10px 20px; border:none; border-radius:10px;">ОК</button>
-            <button onclick="closeModals()" style="background:#555; color:white; padding:10px 20px; border:none; border-radius:10px;">Отмена</button>
-        </div>
-    </div>
+    <div id="modal-nick" class="overlay"><div class="modal-content"><h3>Ваш позывной</h3><input type="text" id="nick-input" class="admin-input-field" placeholder="Введите ник..." maxlength="15"><button onclick="saveNickname()" style="background:#ffd700; color:black; padding:12px 25px; border:none; border-radius:10px; font-weight:bold; width:100%;">СОХРАНИТЬ</button><button onclick="closeNickModal()" style="background:none; color:#aaa; border:none; margin-top:10px;">Закрыть</button></div></div>
+    <div id="modal-leaderboard" class="overlay"><div class="modal-content"><h3 style="color:#0096ff; margin:0;">ТОП ИГРОКОВ</h3><div id="leader-list">Загрузка...</div><button onclick="closeLeaderModal()" style="background:#555; color:white; padding:10px; border:none; border-radius:10px; width:100%;">ЗАКРЫТЬ</button></div></div>
+    <div id="modal-admin" class="overlay"><div class="modal-content"><h3>Выдача монет</h3><input type="number" id="admin-input" class="admin-input-field"><button onclick="confirmAdminAdd()" style="background:#28a745; color:white; padding:10px 20px; border:none; border-radius:10px; width:100%;">ОК</button><button onclick="closeModals()" style="background:#555; color:white; padding:10px; border:none; border-radius:10px; width:100%; margin-top:10px;">Отмена</button></div></div>
 
     <nav>
         <button class="nav-btn active" onclick="openTab('clicker-tab', this)">Кликер</button>
         <button class="nav-btn" onclick="openTab('shop-tab', this)">Прокачка</button>
+        <button class="nav-btn" onclick="openTab('chess-tab', this)">Шахматы</button>
         <button class="nav-btn" id="admin-btn" onclick="openTab('admin-tab', this)">Админка</button>
     </nav>
 
@@ -85,6 +85,7 @@
         <img src="image.png" alt="Clicker" id="clicker-image">
         <button id="nick-display-btn" onclick="openNickModal()">НИКНЕЙМ: <span id="current-nick">Пилот</span></button>
         <div id="modded-tag">modded</div>
+        <button id="leaderboard-btn" onclick="openLeaderModal()">🏆 ТОП ИГРОКОВ</button>
     </div>
 
     <div id="shop-tab" class="tab-content">
@@ -93,14 +94,63 @@
         <div class="shop-item"><div><h3>Авто 1/с</h3><p>Цена: <span id="auto-price">50</span></p></div><button class="buy-btn" onclick="buyUpgrade('auto')">Купить</button></div>
     </div>
 
+    <div id="chess-tab" class="tab-content">
+        <div id="chess-main-menu" class="chess-menu">
+            <h2 style="text-align: center;">Выберите режим</h2>
+            <button class="chess-choice-btn btn-real" onclick="openChessLobby()">♟️ Настоящие шахматы</button>
+            <button class="chess-choice-btn btn-troll" onclick="alert('Скоро: Рофляные шахматы')">🤡 Рофляные шахматы</button>
+        </div>
+        
+        <div id="chess-lobby-screen">
+            <h2 style="margin-top: 20px;">Настоящие Шахматы</h2>
+            <button class="lobby-btn create-btn" onclick="openChessSetup()">СОЗДАТЬ ЛОББИ</button>
+            <button class="lobby-btn join-btn" onclick="openChessJoin()">ПРИСОЕДИНИТЬСЯ К ЛОББИ</button>
+            <button class="lobby-btn back-btn" onclick="closeChessLobby()">НАЗАД</button>
+        </div>
+
+        <div id="chess-setup-screen">
+            <h2 style="margin-top: 20px;">Новое Лобби</h2>
+            <div class="privacy-toggle">
+                <button id="btn-open" class="toggle-btn active" onclick="setPrivacy('open')">ОТКРЫТОЕ</button>
+                <button id="btn-private" class="toggle-btn" onclick="setPrivacy('private')">ПРИВАТНОЕ</button>
+            </div>
+            <div class="lobby-input-group">
+                <label>Название лобби</label>
+                <input type="text" id="lobby-name" class="lobby-input" placeholder="Введите название...">
+            </div>
+            <div id="password-group" class="lobby-input-group">
+                <label>Пароль лобби</label>
+                <input type="password" id="lobby-pass" class="lobby-input" placeholder="Введите пароль...">
+            </div>
+            <button class="lobby-btn create-btn" onclick="alert('Лобби создано!')">ПОДТВЕРДИТЬ</button>
+            <button class="lobby-btn back-btn" onclick="backToLobbyList()">НАЗАД</button>
+        </div>
+
+        <div id="chess-join-screen">
+            <h2 style="margin-top: 20px;">Присоединиться</h2>
+            <div class="lobby-input-group">
+                <label>Название лобби</label>
+                <input type="text" id="join-name" class="lobby-input" placeholder="Название...">
+            </div>
+            <div class="lobby-input-group">
+                <label>Пароль (если есть)</label>
+                <input type="password" id="join-pass" class="lobby-input" placeholder="Пароль...">
+            </div>
+            <button class="lobby-btn create-btn" onclick="alert('Входим...')">ВОЙТИ</button>
+            <button class="lobby-btn back-btn" onclick="backToLobbyList()">НАЗАД</button>
+        </div>
+    </div>
+
     <div id="admin-tab" class="tab-content">
         <div class="admin-box" style="margin-top: 40px;">
-            <h3 style="color:#ff4444; margin:0 0 15px 0;">УПРАВЛЕНИЕ БАНАМИ</h3>
+            <h3 style="color:#ff4444; margin:0 0 15px 0;">УПРАВЛЕНИЕ</h3>
             <input type="text" id="ban-target-id" class="admin-input-field" placeholder="Введите ID игрока">
             <button class="admin-action" onclick="adminBanPlayer()">ЗАБАНИТЬ ИГРОКА</button>
             <button class="admin-action" style="background:#28a745;" onclick="adminUnbanPlayer()">РАЗБАНИТЬ</button>
             <hr style="border: 0.5px solid #333; margin: 15px 0;">
             <button class="admin-action" style="background:#555;" onclick="showAdminModal()">ВЫДАТЬ МОНЕТЫ СЕБЕ</button>
+            <button class="admin-action" style="background: #000; border: 1px solid #ff4444;" onclick="resetMyCoins()">ОБНУЛИТЬ МОИ МОНЕТЫ</button>
+            <button class="admin-action" style="background: #1a1a1a; border: 1px solid #ffd700; color: #ffd700;" onclick="resetShopPrices()">СБРОСИТЬ ЦЕНЫ В МАГАЗИНЕ</button>
         </div>
     </div>
 
@@ -117,7 +167,6 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-
         const ADMIN_IDS = ["ID-RLJV-KV0M", "ID-JILD-9NAM"];
         let coins = 0, clickPower = 1, autoClickers = 0, clickPrice = 10, autoPrice = 50, playerUID = "", nickname = "Пилот";
 
@@ -126,52 +175,94 @@
             localStorage.setItem('playerUID', playerUID);
             document.getElementById('uid-value').innerText = playerUID;
             const currentID = playerUID.toUpperCase();
-
-            db.ref('banned/' + currentID).on('value', (snap) => {
-                if (snap.val() === true) {
-                    document.getElementById('ban-screen').style.display = 'flex';
-                    document.getElementById('banned-id-info').innerText = "ID: " + currentID;
-                }
-            });
-
-            // ПРОВЕРКА НА АДМИНА ДЛЯ ТЭГА И КНОПКИ
-            if (ADMIN_IDS.includes(currentID)) { 
-                document.getElementById('admin-btn').style.display = 'block'; 
-                document.getElementById('modded-tag').style.display = 'block'; // Показываем тэг только тебе
-            }
-
+            db.ref('banned/' + currentID).on('value', (snap) => { if (snap.val() === true) { document.getElementById('ban-screen').style.display = 'flex'; } });
+            if (ADMIN_IDS.includes(currentID)) { document.getElementById('admin-btn').style.display = 'block'; document.getElementById('modded-tag').style.display = 'block'; }
             db.ref('players/' + playerUID).on('value', (snap) => {
                 const d = snap.val();
-                if (d) {
-                    coins = d.coins || 0; clickPower = d.clickPower || 1;
-                    clickPrice = d.clickPrice || 10; autoClickers = d.autoClickers || 0;
-                    autoPrice = d.autoPrice || 50; nickname = d.nickname || "Пилот";
-                    updateUI();
-                } else { saveToCloud(); }
+                if (d) { coins = d.coins || 0; clickPower = d.clickPower || 1; clickPrice = d.clickPrice || 10; autoClickers = d.autoClickers || 0; autoPrice = d.autoPrice || 50; nickname = d.nickname || "Пилот"; updateUI(); } else { saveToCloud(); }
             });
         }
 
-        function saveToCloud() {
-            db.ref('players/' + playerUID).set({ coins, clickPower, clickPrice, autoClickers, autoPrice, nickname });
-        }
-
+        function saveToCloud() { db.ref('players/' + playerUID).set({ uid: playerUID, coins, clickPower, clickPrice, autoClickers, autoPrice, nickname }); }
         function updateUI() {
             document.getElementById('coins').innerText = Math.floor(coins).toLocaleString();
+            document.getElementById('current-nick').innerText = nickname;
             document.getElementById('click-price').innerText = clickPrice;
             document.getElementById('auto-price').innerText = autoPrice;
-            document.getElementById('current-nick').innerText = nickname;
         }
 
+        function openTab(id, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            btn.classList.add('active');
+            if (id !== 'chess-tab') resetChessUI(); 
+        }
+
+        function openChessLobby() {
+            document.getElementById('chess-main-menu').style.display = 'none';
+            document.getElementById('chess-lobby-screen').style.display = 'flex';
+        }
+        function closeChessLobby() {
+            document.getElementById('chess-main-menu').style.display = 'flex';
+            document.getElementById('chess-lobby-screen').style.display = 'none';
+        }
+        function openChessSetup() {
+            document.getElementById('chess-lobby-screen').style.display = 'none';
+            document.getElementById('chess-setup-screen').style.display = 'flex';
+        }
+        function openChessJoin() {
+            document.getElementById('chess-lobby-screen').style.display = 'none';
+            document.getElementById('chess-join-screen').style.display = 'flex';
+        }
+        function backToLobbyList() {
+            document.getElementById('chess-setup-screen').style.display = 'none';
+            document.getElementById('chess-join-screen').style.display = 'none';
+            document.getElementById('chess-lobby-screen').style.display = 'flex';
+        }
+        function resetChessUI() {
+            document.getElementById('chess-main-menu').style.display = 'flex';
+            document.getElementById('chess-lobby-screen').style.display = 'none';
+            document.getElementById('chess-setup-screen').style.display = 'none';
+            document.getElementById('chess-join-screen').style.display = 'none';
+        }
+        function setPrivacy(type) {
+            document.getElementById('btn-open').classList.remove('active');
+            document.getElementById('btn-private').classList.remove('active');
+            const passGroup = document.getElementById('password-group');
+            if(type === 'open') {
+                document.getElementById('btn-open').classList.add('active');
+                passGroup.style.display = 'none';
+            } else {
+                document.getElementById('btn-private').classList.add('active');
+                passGroup.style.display = 'flex';
+            }
+        }
+
+        function openLeaderModal() {
+            document.getElementById('modal-leaderboard').classList.add('show');
+            const listDiv = document.getElementById('leader-list');
+            listDiv.innerHTML = "Загрузка...";
+            db.ref('players').orderByChild('coins').limitToLast(15).once('value', (snap) => {
+                let leaders = [];
+                snap.forEach((child) => { let d = child.val(); d.idCheck = child.key; leaders.push(d); });
+                leaders.sort((a, b) => b.coins - a.coins);
+                listDiv.innerHTML = "";
+                leaders.forEach((l, index) => {
+                    const isMod = ADMIN_IDS.includes(l.idCheck.toUpperCase());
+                    const modTag = isMod ? `<span class="mod-badge">[mod]</span>` : "";
+                    listDiv.innerHTML += `<div class="leader-item"><div>${index+1}. ${modTag}${l.nickname||'Пилот'}</div><span style="color:#0096ff;">${Math.floor(l.coins).toLocaleString()}</span></div>`;
+                });
+            });
+        }
+
+        function closeLeaderModal() { document.getElementById('modal-leaderboard').classList.remove('show'); }
         function openNickModal() { document.getElementById('modal-nick').classList.add('show'); }
         function closeNickModal() { document.getElementById('modal-nick').classList.remove('show'); }
-        function saveNickname() {
-            const val = document.getElementById('nick-input').value.trim();
-            if (val) { nickname = val; updateUI(); saveToCloud(); closeNickModal(); }
-        }
+        function saveNickname() { const v = document.getElementById('nick-input').value.trim(); if(v){ nickname = v; updateUI(); saveToCloud(); closeNickModal(); } }
 
         document.getElementById('clicker-image').addEventListener('pointerdown', (e) => {
-            coins += clickPower; updateUI(); saveToCloud();
-            createPlusOne(e.clientX, e.clientY, clickPower);
+            coins += clickPower; updateUI(); saveToCloud(); createPlusOne(e.clientX, e.clientY, clickPower);
             if (window.navigator.vibrate) window.navigator.vibrate(10);
         });
 
@@ -181,36 +272,20 @@
             saveToCloud();
         }
 
-        function openTab(id, btn) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            btn.classList.add('active');
-        }
-
-        function adminBanPlayer() {
-            const target = document.getElementById('ban-target-id').value.trim().toUpperCase();
-            if (target) { db.ref('banned/' + target).set(true); alert('Игрок ' + target + ' забанен!'); }
-        }
-        function adminUnbanPlayer() {
-            const target = document.getElementById('ban-target-id').value.trim().toUpperCase();
-            if (target) { db.ref('banned/' + target).remove(); alert('Игрок ' + target + ' разбанен!'); }
-        }
+        function adminBanPlayer() { const t = document.getElementById('ban-target-id').value.trim().toUpperCase(); if(t){ db.ref('banned/'+t).set(true); alert('Ban!'); } }
+        function adminUnbanPlayer() { const t = document.getElementById('ban-target-id').value.trim().toUpperCase(); if(t){ db.ref('banned/'+t).remove(); alert('Unban!'); } }
         function showAdminModal() { document.getElementById('modal-admin').classList.add('show'); }
         function closeModals() { document.getElementById('modal-admin').classList.remove('show'); }
-        function confirmAdminAdd() {
-            const val = parseInt(document.getElementById('admin-input').value);
-            if (!isNaN(val)) { coins += val; saveToCloud(); closeModals(); }
-        }
+        function confirmAdminAdd() { const v = parseInt(document.getElementById('admin-input').value); if(!isNaN(v)){ coins += v; saveToCloud(); closeModals(); } }
+        function resetMyCoins() { if(confirm("Вы уверены, что хотите обнулить монеты?")) { coins = 0; updateUI(); saveToCloud(); alert("Баланс обнулен."); } }
+        function resetShopPrices() { if(confirm("Сбросить цены?")) { clickPrice = 10; autoPrice = 50; updateUI(); saveToCloud(); alert("Цены сброшены!"); } }
 
         setInterval(() => { if (autoClickers > 0) { coins += autoClickers; updateUI(); saveToCloud(); } }, 1000);
-
         function createPlusOne(x, y, val) {
             const p = document.createElement('div'); p.innerText = '+' + val; p.className = 'plus-one';
             p.style.left = x + 'px'; p.style.top = y + 'px'; document.body.appendChild(p);
             setTimeout(() => p.remove(), 600);
         }
-
         window.onload = init;
     </script>
 </body>
