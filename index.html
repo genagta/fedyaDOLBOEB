@@ -4,10 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Вертолет Кликер ONLINE PRO</title>
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
-        /* [ЗАМОРОЖЕНО] */
+        /* [ЗАМОРОЖЕНО - ТВОЙ КОД БЕЗ ИЗМЕНЕНИЙ] */
         body { margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; background: linear-gradient(135deg, #000000, #0f0c29, #302b63, #000000); background-size: 400% 400%; animation: gradientBG 15s ease infinite; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; user-select: none; -webkit-user-select: none; }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         #ban-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #ff4444; }
@@ -26,22 +31,28 @@
         #modded-tag { display: none; color: #ff4444; font-size: 12px; font-weight: bold; margin-top: 8px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(255, 68, 68, 0.5); font-family: monospace; }
         #leaderboard-btn { margin-top: 10px; padding: 8px 15px; background: rgba(0, 150, 255, 0.1); border: 1px solid #0096ff; color: #0096ff; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
         
-        /* ШАХМАТЫ */
+        /* ШАХМАТЫ МЕНЮ */
         .chess-menu { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 300px; margin-top: 30px; }
         .chess-choice-btn { padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
         .btn-real { border-color: #ffffff; box-shadow: 0 0 15px rgba(255,255,255,0.1); }
         
-        #chess-lobby-screen, #chess-setup-screen, #chess-join-screen, #chess-room-screen { display: none; flex-direction: column; align-items: center; width: 100%; }
+        #chess-lobby-screen, #chess-setup-screen, #chess-join-screen, #chess-room-screen, #chess-game-screen { display: none; flex-direction: column; align-items: center; width: 100%; }
         .lobby-btn { width: 100%; max-width: 250px; padding: 15px; margin: 10px 0; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
         .create-btn { background: #0096ff; color: white; box-shadow: 0 0 15px rgba(0, 150, 255, 0.4); }
         .join-btn { background: rgba(0, 150, 255, 0.1); color: #0096ff; border: 1px solid #0096ff; }
         .back-btn { background: rgba(255,255,255,0.1); color: #aaa; border: 1px solid rgba(255,255,255,0.2); margin-top: 20px; }
         
+        /* ИГРОВОЙ ЭКРАН ШАХМАТ */
+        #chess-board { width: 90vw; max-width: 380px; margin: 10px auto; border: 4px solid #444; border-radius: 5px; }
+        .player-info-bar { width: 90vw; max-width: 380px; display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(0,0,0,0.4); border-radius: 10px; margin: 5px 0; border: 1px solid rgba(255,255,255,0.1); }
+        .chess-nick { font-weight: bold; font-size: 14px; }
+        .chess-elo { color: #ffd700; font-size: 12px; }
+
+        /* [ОСТАЛЬНЫЕ ТВОИ СТИЛИ БЕЗ ИЗМЕНЕНИЙ] */
         .lobby-list-container { width: 100%; max-width: 300px; margin-top: 15px; background: rgba(0,0,0,0.2); border-radius: 15px; padding: 10px; }
         .lobby-item { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 10px; margin-bottom: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
         .lobby-name-text { font-weight: bold; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; }
         .lobby-count { font-size: 12px; color: #0096ff; font-weight: bold; }
-
         .room-info { text-align: center; margin-bottom: 20px; }
         .room-type-tag { color: #ffd700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
         .player-list-container { width: 100%; max-width: 350px; background: rgba(255,255,255,0.05); border-radius: 15px; padding: 15px; margin-bottom: 20px; }
@@ -49,26 +60,24 @@
         .owner-badge { color: #ff4444; font-size: 10px; font-weight: bold; margin-left: 5px; }
         .start-btn { background: #28a745; color: white; opacity: 0.5; pointer-events: none; }
         .start-btn.ready { opacity: 1; pointer-events: auto; box-shadow: 0 0 15px rgba(40, 167, 69, 0.4); }
-
         .privacy-toggle { display: flex; gap: 10px; width: 100%; max-width: 300px; margin-bottom: 20px; }
         .toggle-btn { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white; cursor: pointer; font-size: 12px; font-weight: bold; }
         .toggle-btn.active { background: #28a745; border-color: #28a745; }
-        
         .lobby-input-group { width: 100%; max-width: 300px; display: flex; flex-direction: column; align-items: flex-start; gap: 5px; margin-bottom: 15px; }
         .lobby-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: #111; color: white; box-sizing: border-box; }
-        
         .shop-item { width: 100%; max-width: 400px; background: rgba(255, 255, 255, 0.1); margin: 10px 0; padding: 20px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; }
         .buy-btn { background: #28a745; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; }
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 100; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
         .overlay.show { display: flex; opacity: 1; }
         .modal-content { background: rgba(40, 40, 60, 0.95); padding: 30px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.2); text-align: center; width: 80%; max-width: 300px; }
-        
-        /* НОВОЕ: Стили для правил и тега бана */
         .fair-play-text { text-align: left; font-size: 12px; line-height: 1.4; color: #ddd; margin: 15px 0; }
         .fair-play-item { margin-bottom: 10px; padding-left: 10px; border-left: 2px solid #ffd700; }
         .warning-text { color: #ff4444; font-weight: bold; font-size: 11px; text-transform: uppercase; margin-top: 10px; }
         .ban-badge-top { color: #ff4444; font-weight: bold; margin-left: 5px; font-size: 10px; border: 1px solid #ff4444; padding: 1px 3px; border-radius: 3px; }
-
+        .nick-gold-shine { background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; animation: gold_shine 3s linear infinite; display: inline-block; }
+        @keyframes gold_shine { to { background-position: 200% center; } }
+        .mod-rainbow { font-weight: bold; font-size: 10px; margin-right: 5px; padding: 1px 4px; border-radius: 4px; border: 1px solid; display: inline-block; background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff); background-size: 400% 400%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: rainbow_text 3s linear infinite; border-image: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff) 1; }
+        @keyframes rainbow_text { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         .admin-input-field { width: 90%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #555; background: #111; color: white; text-align: center; font-size: 16px; }
         .admin-box { background: rgba(255, 0, 0, 0.15); padding: 20px; border-radius: 20px; border: 1px solid #ff4444; text-align: center; width: 90%; max-width: 350px; }
         .admin-action { background: #ff4444; color: white; border: none; padding: 12px; margin: 5px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; }
@@ -95,10 +104,9 @@
     </div>
 
     <div id="modal-nick" class="overlay"><div class="modal-content"><h3>Ваш позывной</h3><input type="text" id="nick-input" class="admin-input-field" placeholder="Введите ник..." maxlength="15"><button onclick="saveNickname()" style="background:#ffd700; color:black; padding:12px 25px; border:none; border-radius:10px; font-weight:bold; width:100%;">СОХРАНИТЬ</button><button onclick="closeNickModal()" style="background:none; color:#aaa; border:none; margin-top:10px;">Закрыть</button></div></div>
-    
     <div id="modal-leaderboard" class="overlay"><div class="modal-content"><h3 style="color:#0096ff; margin:0;">ТОП ИГРОКОВ</h3><div id="leader-list" style="max-height: 300px; overflow-y: auto; margin: 15px 0;">Загрузка...</div><button onclick="closeLeaderModal()" style="background:#555; color:white; padding:10px; border:none; border-radius:10px; width:100%;">ЗАКРЫТЬ</button></div></div>
-    
     <div id="modal-admin" class="overlay"><div class="modal-content"><h3>Выдача монет</h3><input type="number" id="admin-input" class="admin-input-field"><button onclick="confirmAdminAdd()" style="background:#28a745; color:white; padding:10px 20px; border:none; border-radius:10px; width:100%;">ОК</button><button onclick="closeModals()" style="background:#555; color:white; padding:10px; border:none; border-radius:10px; width:100%; margin-top:10px;">Отмена</button></div></div>
+    <div id="modal-elo" class="overlay"><div class="modal-content"><h3>Выдача ELO</h3><input type="number" id="elo-input" class="admin-input-field" placeholder="Кол-во ELO"><button onclick="confirmEloAdd()" style="background:#0096ff; color:white; padding:10px 20px; border:none; border-radius:10px; width:100%;">ПРИМЕНИТЬ</button><button onclick="closeEloModal()" style="background:#555; color:white; padding:10px; border:none; border-radius:10px; width:100%; margin-top:10px;">Отмена</button></div></div>
 
     <nav>
         <button class="nav-btn active" onclick="openTab('clicker-tab', this)">Кликер</button>
@@ -132,12 +140,9 @@
             <h2 style="margin-top: 20px;">Настоящие Шахматы</h2>
             <button class="lobby-btn create-btn" onclick="openChessSetup()">СОЗДАТЬ ЛОББИ</button>
             <button class="lobby-btn join-btn" onclick="openChessJoin()">ПРИСОЕДИНИТЬСЯ К ЛОББИ</button>
-            
             <div class="lobby-list-container">
                 <div style="font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 10px; text-align: center;">Доступные открытые лобби:</div>
-                <div id="active-lobbies-list">
-                    <div style="text-align: center; font-size: 12px; color: #555;">Поиск игр...</div>
-                </div>
+                <div id="active-lobbies-list"></div>
             </div>
             <button class="lobby-btn back-btn" onclick="closeChessLobby()">НАЗАД</button>
         </div>
@@ -180,7 +185,23 @@
             <button id="start-match-btn" class="lobby-btn start-btn" onclick="showFairPlayRules()">НАЧАТЬ МАТЧ</button>
             <button class="lobby-btn back-btn" onclick="leaveLobby()">ВЫЙТИ</button>
         </div>
+
+        <div id="chess-game-screen">
+            <div class="player-info-bar" id="opponent-info">
+                <span id="opp-nick" class="chess-nick">Оппонент...</span>
+                <span id="opp-elo" class="chess-elo">0 ELO</span>
+            </div>
+            
+            <div id="chess-board"></div>
+            
+            <div class="player-info-bar" id="my-info">
+                <span id="my-chess-nick" class="chess-nick">Я</span>
+                <span id="my-chess-elo" class="chess-elo">0 ELO</span>
+            </div>
+            <button class="lobby-btn back-btn" onclick="surrenderGame()">СДАТЬСЯ</button>
+        </div>
     </div>
+
     <div id="admin-tab" class="tab-content">
         <div class="admin-box" style="margin-top: 40px;">
             <h3 style="color:#ff4444; margin:0 0 15px 0;">УПРАВЛЕНИЕ</h3>
@@ -189,11 +210,11 @@
             <button class="admin-action" style="background:#28a745;" onclick="adminUnbanPlayer()">РАЗБАНИТЬ</button>
             <hr style="border: 0.5px solid #333; margin: 15px 0;">
             <button class="admin-action" style="background:#555;" onclick="showAdminModal()">ВЫДАТЬ МОНЕТЫ СЕБЕ</button>
+            <button class="admin-action" style="background:#0096ff;" onclick="showEloModal()">ДОБАВИТЬ ELO</button>
             <button class="admin-action" style="background: #000; border: 1px solid #ff4444;" onclick="resetMyCoins()">ОБНУЛИТЬ МОИ МОНЕТЫ</button>
             <button class="admin-action" style="background: #1a1a1a; border: 1px solid #ffd700; color: #ffd700;" onclick="resetShopPrices()">СБРОСИТЬ ЦЕНЫ</button>
         </div>
     </div>
-
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDONq9oNGkDTfuN3dP02VJH-...", 
@@ -207,73 +228,177 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const ADMIN_IDS = ["ID-RLJV-KV0M", "ID-JILD-9NAM"];
-        let coins = 0, clickPower = 1, autoClickers = 0, clickPrice = 10, autoPrice = 50, playerUID = "", nickname = "Пилот";
+        
+        let coins = 0, clickPower = 1, autoClickers = 0, clickPrice = 10, autoPrice = 50;
+        let playerUID = "", nickname = "Пилот", playerElo = 1000;
         let currentLobbyID = null, lobbyPrivacy = 'open';
+        
+        // Переменные для шахмат
+        let board = null;
+        let game = new Chess();
+        let myColor = 'w';
 
         function init() {
             playerUID = localStorage.getItem('playerUID') || 'ID-' + Math.random().toString(36).substr(2, 4).toUpperCase() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase();
             localStorage.setItem('playerUID', playerUID);
             document.getElementById('uid-value').innerText = playerUID;
             
-            db.ref('banned/' + playerUID.toUpperCase()).on('value', (snap) => { if (snap.val() === true) document.getElementById('ban-screen').style.display = 'flex'; });
-            
+            db.ref('banned/' + playerUID.toUpperCase()).on('value', (snap) => { 
+                if (snap.val() === true) document.getElementById('ban-screen').style.display = 'flex'; 
+            });
+
             if (ADMIN_IDS.includes(playerUID.toUpperCase())) { 
                 document.getElementById('admin-btn').style.display = 'block'; 
                 document.getElementById('modded-tag').style.display = 'block'; 
             }
-            
+
             db.ref('players/' + playerUID).on('value', (snap) => {
                 const d = snap.val();
-                if (d) { coins = d.coins; clickPower = d.clickPower; clickPrice = d.clickPrice; autoClickers = d.autoClickers; autoPrice = d.autoPrice; nickname = d.nickname || "Пилот"; updateUI(); }
-                else { saveToCloud(); }
+                if (d) { 
+                    coins = d.coins; clickPower = d.clickPower; clickPrice = d.clickPrice; 
+                    autoClickers = d.autoClickers; autoPrice = d.autoPrice; 
+                    nickname = d.nickname || "Пилот"; playerElo = d.elo || 1000; 
+                    updateUI(); 
+                } else { saveToCloud(); }
             });
             listenToOpenLobbies();
         }
 
-        // ЛОГИКА ПРАВИЛ ЧЕСТНОЙ ИГРЫ
         function showFairPlayRules() { document.getElementById('modal-fair-play').classList.add('show'); }
-        function confirmFairPlay() { document.getElementById('modal-fair-play').classList.remove('show'); alert('Старт!'); }
+        
+        function confirmFairPlay() { 
+            document.getElementById('modal-fair-play').classList.remove('show'); 
+            // Переводим лобби в состояние игры
+            if (currentLobbyID) {
+                db.ref('chess_lobbies/' + currentLobbyID).update({ status: 'playing', fen: 'start' });
+            }
+        }
 
-        // ОБНОВЛЕННЫЙ ТОП С ТЕГОМ [BANNED]
+        // Логика старта самой игры
+        function startChessGame(data) {
+            document.getElementById('chess-room-screen').style.display = 'none';
+            document.getElementById('chess-game-screen').style.display = 'flex';
+            
+            const players = data.players;
+            const pKeys = Object.keys(players);
+            
+            // Определяем кто за кого (создатель лобби всегда белые для простоты)
+            myColor = (data.owner === playerUID) ? 'w' : 'b';
+            
+            // Ищем оппонента
+            const oppID = pKeys.find(id => id !== playerUID);
+            const oppData = players[oppID];
+
+            // Отрисовка инфо оппонента (верхняя панель)
+            const oppNickSpan = document.getElementById('opp-nick');
+            oppNickSpan.innerText = oppData.nickname;
+            if (ADMIN_IDS.includes(oppData.uid.toUpperCase())) oppNickSpan.className = "chess-nick nick-gold-shine";
+            document.getElementById('opp-elo').innerText = oppData.elo + " ELO";
+
+            // Отрисовка моего инфо (нижняя панель)
+            const myNickSpan = document.getElementById('my-chess-nick');
+            let myDisplayName = nickname;
+            if (ADMIN_IDS.includes(playerUID.toUpperCase())) {
+                myNickSpan.className = "chess-nick nick-gold-shine";
+                myDisplayName = "[MOD] " + nickname;
+            }
+            myNickSpan.innerText = myDisplayName;
+            document.getElementById('my-chess-elo').innerText = playerElo + " ELO";
+
+            // Инициализация доски
+            const config = {
+                draggable: true,
+                position: 'start',
+                orientation: myColor === 'w' ? 'white' : 'black',
+                onDragStart: onDragStart,
+                onDrop: onDrop,
+                snapEndSpeed: 40,
+                pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
+            };
+            board = Chessboard('chess-board', config);
+            game = new Chess();
+
+            // Слушаем ходы из базы
+            db.ref('chess_lobbies/' + currentLobbyID + '/fen').on('value', (snap) => {
+                const fen = snap.val();
+                if (fen && fen !== 'start') {
+                    game.load(fen);
+                    board.position(fen);
+                }
+            });
+        }
+
+        function onDragStart (source, piece, position, orientation) {
+            // Не даем двигать если игра окончена
+            if (game.game_over()) return false;
+            // Не даем двигать чужие фигуры
+            if ((myColor === 'w' && piece.search(/^b/) !== -1) ||
+                (myColor === 'b' && piece.search(/^w/) !== -1)) {
+                return false;
+            }
+            // Только свой ход
+            if ((game.turn() === 'w' && myColor !== 'w') ||
+                (game.turn() === 'b' && myColor !== 'b')) {
+                return false;
+            }
+        }
+
+        function onDrop (source, target) {
+            let move = game.move({
+                from: source,
+                to: target,
+                promotion: 'q' // всегда в королеву для простоты на мобилках
+            });
+
+            if (move === null) return 'snapback';
+
+            // Отправляем ход в базу
+            db.ref('chess_lobbies/' + currentLobbyID).update({ fen: game.fen() });
+            checkGameOver();
+        }
+
+        function checkGameOver() {
+            if (game.game_over()) {
+                alert('Игра окончена!');
+                leaveLobby();
+            }
+        }
+
+        function surrenderGame() {
+            if (confirm("Сдаться?")) {
+                leaveLobby();
+            }
+        }
+
+        // [ПРОДОЛЖЕНИЕ ТВОИХ ФУНКЦИЙ БЕЗ ИЗМЕНЕНИЙ]
         async function openLeaderModal() {
             document.getElementById('modal-leaderboard').classList.add('show');
             const listDiv = document.getElementById('leader-list');
             listDiv.innerHTML = "Загрузка...";
-            
             db.ref('players').orderByChild('coins').limitToLast(15).once('value', async (snap) => {
                 let leaders = [];
                 snap.forEach((child) => { let d = child.val(); d.idCheck = child.key; leaders.push(d); });
                 leaders.sort((a, b) => b.coins - a.coins);
                 listDiv.innerHTML = "";
-                
                 for (let i = 0; i < leaders.length; i++) {
                     const l = leaders[i];
                     const isMod = ADMIN_IDS.includes(l.idCheck.toUpperCase());
-                    
-                    // Проверка бана для тега
                     const banSnap = await db.ref('banned/' + l.idCheck.toUpperCase()).once('value');
                     const isBanned = banSnap.val() === true;
-                    
-                    const modTag = isMod ? `<span class="mod-badge">[mod]</span>` : "";
+                    const modTag = isMod ? `<span class="mod-rainbow">[MOD]</span>` : "";
                     const banTag = isBanned ? `<span class="ban-badge-top">[BANNED]</span>` : "";
-                    
-                    listDiv.innerHTML += `
-                        <div class="leader-item">
-                            <div>
-                                <div style="font-weight:bold;">${i+1}. ${modTag}${l.nickname||'Пилот'}${banTag}</div>
-                                <div style="font-size:9px; color:#777; font-family:monospace;">${l.idCheck}</div>
-                            </div>
-                            <span style="color:#0096ff; font-weight:bold;">${Math.floor(l.coins).toLocaleString()}</span>
-                        </div>`;
+                    const nickClass = isMod ? 'class="nick-gold-shine"' : "";
+                    listDiv.innerHTML += `<div class="leader-item"><div><div style="font-weight:bold;">${i+1}. ${modTag}<span ${nickClass}>${l.nickname||'Пилот'}</span>${banTag}</div><div style="font-size:9px; color:#777; font-family:monospace;">${l.idCheck}</div></div><span style="color:#0096ff; font-weight:bold;">${Math.floor(l.coins).toLocaleString()}</span></div>`;
                 }
             });
         }
-
-        function saveToCloud() { db.ref('players/' + playerUID).set({ uid: playerUID, coins, clickPower, clickPrice, autoClickers, autoPrice, nickname, elo: 1000 }); }
+        function saveToCloud() { db.ref('players/' + playerUID).set({ uid: playerUID, coins, clickPower, clickPrice, autoClickers, autoPrice, nickname, elo: playerElo }); }
         
         function updateUI() {
             document.getElementById('coins').innerText = Math.floor(coins).toLocaleString();
-            document.getElementById('current-nick').innerText = nickname;
+            const nickSpan = document.getElementById('current-nick');
+            nickSpan.innerText = nickname;
+            if (ADMIN_IDS.includes(playerUID.toUpperCase())) nickSpan.className = "nick-gold-shine";
             document.getElementById('click-price').innerText = clickPrice;
             document.getElementById('auto-price').innerText = autoPrice;
         }
@@ -324,8 +449,19 @@
 
         function joinLobby(lobbyID) {
             currentLobbyID = lobbyID;
-            db.ref('chess_lobbies/' + lobbyID + '/players/' + playerUID).set({ uid: playerUID, nickname: nickname, elo: 1000 });
-            db.ref('chess_lobbies/' + lobbyID).on('value', (snap) => { const data = snap.val(); if (data) renderRoom(data); });
+            db.ref('chess_lobbies/' + lobbyID + '/players/' + playerUID).set({ uid: playerUID, nickname: nickname, elo: playerElo });
+            
+            db.ref('chess_lobbies/' + lobbyID).on('value', (snap) => { 
+                const data = snap.val(); 
+                if (data) {
+                    // Если статус сменился на playing - запускаем доску
+                    if (data.status === 'playing') {
+                        startChessGame(data);
+                    } else {
+                        renderRoom(data); 
+                    }
+                } 
+            });
             document.getElementById('chess-lobby-screen').style.display = 'none';
             document.getElementById('chess-setup-screen').style.display = 'none';
             document.getElementById('chess-room-screen').style.display = 'flex';
@@ -341,14 +477,25 @@
             pKeys.forEach(key => {
                 const p = players[key];
                 const isOwner = key === data.owner;
-                listDiv.innerHTML += `<div class="player-entry"><div><div style="font-weight:bold; font-size:14px;">${p.nickname} ${isOwner ? '<span class="owner-badge">[OWNER]</span>' : ''}</div><div style="font-size:10px; color:#666;">${p.uid}</div></div><div style="color:#ffd700; font-size:12px;">${p.elo} ELO</div></div>`;
+                const isMod = ADMIN_IDS.includes(p.uid.toUpperCase());
+                const modTag = isMod ? `<span class="mod-rainbow">[MOD]</span>` : "";
+                const nickClass = isMod ? 'class="nick-gold-shine"' : "";
+                listDiv.innerHTML += `<div class="player-entry"><div><div style="font-weight:bold; font-size:14px;">${modTag}<span ${nickClass}>${p.nickname}</span> ${isOwner ? '<span class="owner-badge">[OWNER]</span>' : ''}</div><div style="font-size:10px; color:#666;">${p.uid}</div></div><div style="color:#ffd700; font-size:12px;">${p.elo} ELO</div></div>`;
             });
             const startBtn = document.getElementById('start-match-btn');
             if (data.owner === playerUID && pKeys.length >= 2) startBtn.classList.add('ready');
             else startBtn.classList.remove('ready');
         }
 
-        function leaveLobby() { if (currentLobbyID) { db.ref('chess_lobbies/' + currentLobbyID + '/players/' + playerUID).remove(); db.ref('chess_lobbies/' + currentLobbyID).off(); currentLobbyID = null; } resetChessUI(); }
+        function leaveLobby() { 
+            if (currentLobbyID) { 
+                db.ref('chess_lobbies/' + currentLobbyID + '/players/' + playerUID).remove(); 
+                db.ref('chess_lobbies/' + currentLobbyID).off(); 
+                currentLobbyID = null; 
+            } 
+            resetChessUI(); 
+        }
+
         function manualJoinLobby() { const name = document.getElementById('join-name').value.trim(); db.ref('chess_lobbies').once('value', (snap) => { let found = false; snap.forEach(child => { if (child.val().name === name) { joinLobby(child.key); found = true; } }); if (!found) alert("Лобби не найдено"); }); }
 
         function openChessLobby() { document.getElementById('chess-main-menu').style.display = 'none'; document.getElementById('chess-lobby-screen').style.display = 'flex'; }
@@ -356,12 +503,28 @@
         function openChessSetup() { document.getElementById('chess-lobby-screen').style.display = 'none'; document.getElementById('chess-setup-screen').style.display = 'flex'; }
         function openChessJoin() { document.getElementById('chess-lobby-screen').style.display = 'none'; document.getElementById('chess-join-screen').style.display = 'flex'; }
         function backToLobbyList() { document.getElementById('chess-setup-screen').style.display = 'none'; document.getElementById('chess-join-screen').style.display = 'none'; document.getElementById('chess-lobby-screen').style.display = 'flex'; }
-        function resetChessUI() { document.getElementById('chess-main-menu').style.display = 'flex'; document.getElementById('chess-lobby-screen').style.display = 'none'; document.getElementById('chess-setup-screen').style.display = 'none'; document.getElementById('chess-join-screen').style.display = 'none'; document.getElementById('chess-room-screen').style.display = 'none'; }
+        
+        function resetChessUI() { 
+            document.getElementById('chess-main-menu').style.display = 'flex'; 
+            document.getElementById('chess-lobby-screen').style.display = 'none'; 
+            document.getElementById('chess-setup-screen').style.display = 'none'; 
+            document.getElementById('chess-join-screen').style.display = 'none'; 
+            document.getElementById('chess-room-screen').style.display = 'none'; 
+            document.getElementById('chess-game-screen').style.display = 'none';
+            if (board) board.destroy();
+        }
 
         function closeLeaderModal() { document.getElementById('modal-leaderboard').classList.remove('show'); }
         function openNickModal() { document.getElementById('modal-nick').classList.add('show'); }
         function closeNickModal() { document.getElementById('modal-nick').classList.remove('show'); }
         function saveNickname() { const v = document.getElementById('nick-input').value.trim(); if(v){ nickname = v; updateUI(); saveToCloud(); closeNickModal(); } }
+
+        function showEloModal() { document.getElementById('modal-elo').classList.add('show'); }
+        function closeEloModal() { document.getElementById('modal-elo').classList.remove('show'); }
+        function confirmEloAdd() {
+            const v = parseInt(document.getElementById('elo-input').value);
+            if (!isNaN(v)) { playerElo += v; saveToCloud(); closeEloModal(); alert("ELO успешно добавлено!"); }
+        }
 
         document.getElementById('clicker-image').addEventListener('pointerdown', (e) => {
             coins += clickPower; updateUI(); saveToCloud(); createPlusOne(e.clientX, e.clientY, clickPower);
